@@ -21,6 +21,8 @@ release is that edit plus a `git tag`.
   hidden under it. A position the person sets by ⌘-dragging still wins.
 - An app icon: a booth, the nook of the name. The source is `tools/AppIcon.svg`;
   `make icon` renders it into the asset catalog.
+- The menu bar icon is the same booth, reduced to lines, in place of the
+  generic grid. Drawn in code, so a `swift run` build shows it too.
 
 ## 0.1.2 — 2026-09-22
 

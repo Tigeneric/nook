@@ -18,7 +18,7 @@ struct NookApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("Nook", systemImage: "rectangle.grid.3x2") {
+        MenuBarExtra {
             // The combination is configurable, so the menu reads it rather
             // than spelling it out: a stale ⌥Space here would be a lie.
             if let combo = delegate.preferences.hotKey {
@@ -29,6 +29,8 @@ struct NookApp: App {
             Button("Settings…") { delegate.settings.show() }
             Divider()
             Button("Quit") { NSApp.terminate(nil) }
+        } label: {
+            Image(nsImage: MenuBarIcon.image)
         }
     }
 }
