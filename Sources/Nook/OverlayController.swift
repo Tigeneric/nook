@@ -141,7 +141,12 @@ final class OverlayController {
 
         // Nothing to offer when the name was never set: the overlay says so
         // instead of promising a paste that would put an empty line in.
-        if copyName, let name = preferences.bookingName {
+        // The sheet's own spelling when it has one, and the typed name when it
+        // does not. The cell is validated against the roster literally, while
+        // a name is matched folded, so the two forms of one name part company
+        // exactly here — see `Agenda.canonicalName`.
+        if copyName, let typed = preferences.bookingName {
+            let name = Agenda.canonicalName(for: typed, in: schedule) ?? typed
             // A refusal stops here on purpose. The sheet is not opened and the
             // overlay is not hidden: with four cells selected and the old
             // clipboard still loaded, ⌘V would put it into the sheet, and the

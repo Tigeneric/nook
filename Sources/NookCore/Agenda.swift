@@ -120,6 +120,37 @@ public enum Agenda {
         return cell == mine
     }
 
+    /// How the sheet spells this name, when it is the same name spelled
+    /// otherwise. `nil` when the roster has nothing to add.
+    ///
+    /// A booking cell is a dropdown over the roster, and the rule behind it
+    /// compares **literally**: `Ana Petrović` is refused where the roster
+    /// holds `AnaPetrovic`. Reading folds that apart on purpose — whether a
+    /// name carries a space is not a fact about the person — so a name can
+    /// find every booking of its owner and still be turned away on the way in.
+    /// The fold is what closes that gap: the substitution is the roster’s
+    /// spelling of the same name, differing only in what the fold has already
+    /// declared insignificant.
+    ///
+    /// **Nothing looser than the fold.** `closestName` answers “did you mean”,
+    /// and its tolerance is right for a question and wrong for an answer: a
+    /// near-miss written into a document the whole coworking shares puts
+    /// somebody else’s name on the booking, and the booking is then theirs.
+    ///
+    /// Two entries folding alike leave no spelling to choose, and guessing
+    /// between two living people is worse than pasting what was typed.
+    public static func canonicalName(for name: String, in schedule: Schedule) -> String? {
+        let mine = joined(name)
+        guard !mine.isEmpty else { return nil }
+
+        var found: String?
+        for candidate in schedule.roster where joined(candidate) == mine {
+            guard found == nil else { return nil }
+            found = candidate
+        }
+        return found == name ? nil : found
+    }
+
     /// Where an arrow moves the focus over the shown list.
     ///
     /// `nil` is **the query line itself**, which sits above the list — so the

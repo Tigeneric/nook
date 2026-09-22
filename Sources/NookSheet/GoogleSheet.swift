@@ -12,6 +12,15 @@ import NookCore
 /// name in the coworking; an open repository is no place for it. The ID is set
 /// in the app’s settings and stays on the person’s machine.
 public enum GoogleSheet {
+    /// The tab a booking cell is validated against: one column of names, the
+    /// header `Member Name` above them.
+    ///
+    /// A `gid` rather than a title, for the reason the space tabs use one —
+    /// titles in this document carry typos and trailing spaces. Like theirs,
+    /// it addresses nothing without the document it belongs to, and that is
+    /// not here.
+    public static let rosterGID = "573926329"
+
     /// CSV export of a tab. Readable without authorisation — verified.
     public static func csvExportURL(spreadsheetID: String, gid: String) -> URL {
         URL(string: "https://docs.google.com/spreadsheets/d/\(spreadsheetID)/export?format=csv&gid=\(gid)")!

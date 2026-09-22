@@ -11,12 +11,26 @@ public struct Schedule: Sendable {
     public let slots: [TimeOfDay]
     /// Who holds the cell, or `nil`. Indexing: `cells[space.id]![dateIndex][slotIndex]`.
     public let cells: [String: [[String?]]]
+    /// The names the source will accept in a cell, spelled as it spells them.
+    ///
+    /// Empty when there is no such list to have — a source that keeps none, or
+    /// one whose list did not load. That is not a broken schedule: the only
+    /// thing an empty roster costs is `Agenda.canonicalName`, which then has
+    /// nothing to say and the typed name is used as it stands.
+    public let roster: [String]
 
-    public init(spaces: [Space], dates: [CalendarDate], slots: [TimeOfDay], cells: [String: [[String?]]]) {
+    public init(
+        spaces: [Space],
+        dates: [CalendarDate],
+        slots: [TimeOfDay],
+        cells: [String: [[String?]]],
+        roster: [String] = []
+    ) {
         self.spaces = spaces
         self.dates = dates
         self.slots = slots
         self.cells = cells
+        self.roster = roster
     }
 
     public func dateIndex(of date: CalendarDate) -> Int? {

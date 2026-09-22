@@ -37,6 +37,10 @@ public struct GoogleSheetSource: ScheduleSource {
     }
 
     public func load(spaces: [Space]) async throws -> Schedule {
+        // Started first and awaited last: it is one more request over the same
+        // connection, and nothing below depends on it.
+        async let roster = loadRoster()
+
         let tabs = try await withThrowingTaskGroup(of: (String, RoomTab).self) { group in
             for space in spaces {
                 group.addTask { (space.id, try await self.loadTab(space)) }
@@ -52,7 +56,8 @@ public struct GoogleSheetSource: ScheduleSource {
         // the rest against it, so a mismatch does not turn into a silent
         // column shift.
         guard let first = spaces.first, let reference = tabs[first.id] else {
-            return Schedule(spaces: spaces, dates: [], slots: SheetGrid.slots, cells: [:])
+            return Schedule(spaces: spaces, dates: [], slots: SheetGrid.slots, cells: [:],
+                            roster: await roster)
         }
         for space in spaces.dropFirst() {
             guard tabs[space.id]?.dates == reference.dates else {
@@ -64,8 +69,24 @@ public struct GoogleSheetSource: ScheduleSource {
             spaces: spaces,
             dates: reference.dates,
             slots: reference.slots,
-            cells: tabs.mapValues(\.cells)
+            cells: tabs.mapValues(\.cells),
+            roster: await roster
         )
+    }
+
+    /// The roster, or nothing at all.
+    ///
+    /// **A failure here is not a failure of the schedule.** Without the list
+    /// `Agenda.canonicalName` has nothing to say and the name is pasted as it
+    /// was typed — exactly what happened before this tab was read at all. The
+    /// overlay is the day's answer; losing it over a tab that only improves a
+    /// paste would be the wrong trade, so this one swallows what the others
+    /// throw.
+    private func loadRoster() async -> [String] {
+        guard let text = try? await fetch(gid: GoogleSheet.rosterGID, from: "roster"),
+              let names = try? RosterParser.parse(text)
+        else { return [] }
+        return names
     }
 
     /// Where a person goes to type the name in. The first version writes
@@ -89,7 +110,18 @@ public struct GoogleSheetSource: ScheduleSource {
     }
 
     private func loadTab(_ space: Space) async throws -> RoomTab {
-        let url = GoogleSheet.csvExportURL(spreadsheetID: spreadsheetID, gid: space.sourceKey)
+        let text = try await fetch(gid: space.sourceKey, from: space.id)
+        do {
+            return try RoomTabParser.parse(text)
+        } catch let error as RoomTabParseError {
+            throw SheetLoadError.parse(space: space.id, reason: error.description)
+        }
+    }
+
+    /// The CSV export of one tab. `from` names it for the error and nothing
+    /// else — the address never travels into a message.
+    private func fetch(gid: String, from space: String) async throws -> String {
+        let url = GoogleSheet.csvExportURL(spreadsheetID: spreadsheetID, gid: gid)
         // No caching: the schedule is re-read on every showing of the overlay,
         // because the sheet is edited during the day — measured, not assumed.
         var request = URLRequest(url: url)
@@ -113,15 +145,11 @@ public struct GoogleSheetSource: ScheduleSource {
         }
 
         if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-            throw SheetLoadError.http(space: space.id, status: http.statusCode)
+            throw SheetLoadError.http(space: space, status: http.statusCode)
         }
         guard let text = String(data: data, encoding: .utf8) else {
-            throw SheetLoadError.notText(space: space.id)
+            throw SheetLoadError.notText(space: space)
         }
-        do {
-            return try RoomTabParser.parse(text)
-        } catch let error as RoomTabParseError {
-            throw SheetLoadError.parse(space: space.id, reason: error.description)
-        }
+        return text
     }
 }

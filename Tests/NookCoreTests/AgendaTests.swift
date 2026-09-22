@@ -304,3 +304,67 @@ struct ClosestNameTests {
         #expect(Agenda.closestName(to: "Ana Petrović", in: sheet([])) == nil)
     }
 }
+
+/// Reading folds a name, the cell's own rule compares it literally. What the
+/// roster is for is the gap between those two.
+@Suite("The spelling the sheet will accept")
+struct CanonicalNameTests {
+    private func sheet(_ roster: [String]) -> Schedule {
+        Schedule(spaces: Space.all, dates: [today], slots: SheetGrid.slots, cells: [:], roster: roster)
+    }
+
+    /// The case this exists for: found on reading, refused on writing.
+    @Test("A name the fold matches is replaced by the roster's spelling")
+    func foldedMatch() {
+        #expect(Agenda.canonicalName(for: "Ana Petrovic", in: sheet(["AnaPetrovic"])) == "AnaPetrovic")
+    }
+
+    @Test("The fold works the other way round too")
+    func foldedMatchReversed() {
+        #expect(Agenda.canonicalName(for: "AnaPetrovic", in: sheet(["Ana Petrović"])) == "Ana Petrović")
+    }
+
+    @Test("Case and diacritics are part of the fold", arguments: [
+        "ana petrović", "ANA PETROVIC", "Ana Petrovic",
+    ])
+    func caseAndDiacritics(typed: String) {
+        #expect(Agenda.canonicalName(for: typed, in: sheet(["Ana Petrović"])) == "Ana Petrović")
+    }
+
+    @Test("A name already spelled as the roster spells it needs no substitution")
+    func alreadyCanonical() {
+        #expect(Agenda.canonicalName(for: "Ana Petrović", in: sheet(["Ana Petrović"])) == nil)
+    }
+
+    /// The tolerance that suits “did you mean” would here sign somebody else's
+    /// name to the booking.
+    @Test("A near-miss is not a match: one slip proposes nobody")
+    func neverGuesses() {
+        #expect(Agenda.canonicalName(for: "Ana Petrovich", in: sheet(["Ana Petrović"])) == nil)
+    }
+
+    @Test("A first name does not become a fuller one")
+    func neverExtends() {
+        #expect(Agenda.canonicalName(for: "Ana", in: sheet(["Ana Petrović"])) == nil)
+    }
+
+    @Test("Two entries folding alike leave nothing to choose")
+    func ambiguous() {
+        #expect(Agenda.canonicalName(for: "Ana Petrovic", in: sheet(["AnaPetrovic", "Ana Petrović"])) == nil)
+    }
+
+    @Test("A name the roster does not carry is left as it was")
+    func absent() {
+        #expect(Agenda.canonicalName(for: "Marko Jurić", in: sheet(["Ana Petrović"])) == nil)
+    }
+
+    @Test("No roster, nothing to say")
+    func withoutARoster() {
+        #expect(Agenda.canonicalName(for: "Ana Petrović", in: sheet([])) == nil)
+    }
+
+    @Test("An empty name matches nobody", arguments: ["", "   "])
+    func emptyName(typed: String) {
+        #expect(Agenda.canonicalName(for: typed, in: sheet(["Ana Petrović"])) == nil)
+    }
+}

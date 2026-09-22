@@ -9,6 +9,16 @@ release is that edit plus a `git tag`.
 
 ## Unreleased
 
+### Changed
+
+- ⏎ now copies the name the way the sheet spells it. A booking cell is a
+  dropdown over the sheet's roster and its rule compares literally, while Nook
+  matches names folded - case, diacritics and spaces dropped - so a name could
+  find every booking of its owner and still be refused when pasted in:
+  `Ana Petrović` against a roster holding `AnaPetrovic`. Only the fold
+  substitutes, never a near-miss: writing a near-miss would sign somebody
+  else's name to the booking.
+
 ### Fixed
 
 - The hint in the empty field no longer offers a time that has gone. After

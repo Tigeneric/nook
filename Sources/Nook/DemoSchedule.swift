@@ -80,7 +80,16 @@ struct DemoSource: ScheduleSource {
         fill("MR1", 0, TimeOfDay(hour: 16, minute: 30), TimeOfDay(hour: 17, minute: 30), Demo.bookingName)
         fill("C1", 2, TimeOfDay(hour: 10), TimeOfDay(hour: 11), Demo.bookingName)
 
-        return Schedule(spaces: spaces, dates: dates, slots: SheetGrid.slots, cells: cells)
+        // A roster, because the real sheet has one and the demo is what the
+        // pictures are taken against. Spelled without the space on purpose:
+        // that is the shape the substitution exists for, and `--demo` is where
+        // it can be seen working.
+        let roster = [
+            "Marko Jurić", "Nikola Savić", "Jelena Marković", "Petar Nikolić",
+            "AnaPetrovic", "Acme Studio 2", "Acme Studio 3",
+        ]
+        return Schedule(spaces: spaces, dates: dates, slots: SheetGrid.slots, cells: cells,
+                        roster: roster)
     }
 
     /// There is nowhere to send anybody: the sheet behind this does not exist.
