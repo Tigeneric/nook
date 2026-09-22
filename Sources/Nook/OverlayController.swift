@@ -59,6 +59,14 @@ final class OverlayController {
         // input line would still hold the previous request.
         let hosting = NSHostingView(rootView: makeView(query: query, panel: panel))
         hosting.sizingOptions = [.preferredContentSize]
+        // The rounded material alone is not enough before macOS 26: there the
+        // hosting view fills the whole window and its corners stay square.
+        // Clipping the layer rounds them on every version, and the shadow,
+        // taken from what is drawn, follows the curve.
+        hosting.wantsLayer = true
+        hosting.layer?.cornerRadius = OverlayMetrics.cornerRadius
+        hosting.layer?.cornerCurve = .continuous
+        hosting.layer?.masksToBounds = true
         panel.contentView = hosting
 
         store.reload()
