@@ -7,6 +7,17 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
+## Unreleased
+
+### Fixed
+
+- The hint in the empty field no longer offers a time that has gone. After
+  20:00 the grid has nothing left for today, and the hint fell back to the
+  start of the day - a bare `8:00`, which the parser binds to today, so ⇥
+  entered this morning and ⏎ opened a range twelve hours over. It now names a
+  day as well, and the day is the sheet's next one rather than tomorrow: on a
+  Friday evening tomorrow is a Saturday the sheet does not hold.
+
 ## 0.1.3 — 2026-09-22
 
 The app can be found and closed even when macOS has hidden its menu bar

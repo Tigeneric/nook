@@ -142,6 +142,48 @@ public enum QueryParser {
         return parts.joined(separator: " ")
     }
 
+    /// The hint for an empty input line, in the canonical form `parse` reads
+    /// back as the same request — ⇥ inserts it verbatim.
+    ///
+    /// The time is the nearest slot no earlier than `now`, not a hard-coded
+    /// “14:00”: at 15:40 such a hint offered the past.
+    ///
+    /// **Once the grid’s day is over the hint carries a day of its own.** A
+    /// bare time is bound to today, because `parse` has nothing else to bind
+    /// it to, so at 20:48 “8:00” is this morning — twelve hours gone, and ⏎
+    /// on it opens a range that no longer exists. The day is the sheet’s next
+    /// one rather than `today + 1`, for the reason the dated example gives:
+    /// on a Friday evening tomorrow is a Saturday the sheet does not hold.
+    /// With no sheet loaded to ask, tomorrow is still the better guess — a day
+    /// the sheet lacks is answered plainly, a request into the past is not.
+    public static func hint(
+        today: CalendarDate,
+        now: TimeOfDay,
+        dates: [CalendarDate],
+        language: QueryLanguage
+    ) -> String {
+        let start = SheetGrid.suggestedStart(after: now)
+        let duration = durationText(minutes: hintMinutes)
+        guard SheetGrid.slotIndex(atOrAfter: now) == nil else {
+            return "\(start) \(duration)"
+        }
+        let date = dates.first { $0 > today } ?? today.adding(days: 1)
+        return "\(dayText(for: date, today: today, language: language)) \(start) \(duration)"
+    }
+
+    /// The duration the hint offers. Not `defaultMinutes`: that one is what a
+    /// request without a duration *means*, while this is what a person is
+    /// being offered to ask for, and three quarters of an hour is the
+    /// commoner meeting.
+    static let hintMinutes = 45
+
+    /// A day for the input line: a word while words are honest, `dd/mm` past
+    /// that. Both forms `parse` reads back.
+    static func dayText(for date: CalendarDate, today: CalendarDate, language: QueryLanguage) -> String {
+        dayWord(for: date, today: today, language: language)
+            ?? String(format: "%02d/%02d", date.day, date.month)
+    }
+
     /// A duration in the canonical form `parse` reads back as the same number
     /// of minutes: `45m`, `1h`, `1h 30m`.
     ///
@@ -193,7 +235,7 @@ public enum QueryParser {
 
     /// How to name a day in that language: “today”, “tomorrow” or a weekday.
     /// `nil` when words cannot express it — beyond the coming week they lie.
-    static func dayWord(for date: CalendarDate, today: CalendarDate, language: QueryLanguage) -> String? {
+    public static func dayWord(for date: CalendarDate, today: CalendarDate, language: QueryLanguage) -> String? {
         guard let vocabulary = QueryVocabulary.all.first(where: { $0.language == language }) else { return nil }
         switch date.daysSinceEpoch - today.daysSinceEpoch {
         case 0: return vocabulary.today

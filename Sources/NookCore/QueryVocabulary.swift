@@ -7,6 +7,28 @@ public enum QueryLanguage: String, Sendable, CaseIterable {
     case en, ru
     case srLatin = "sr-Latn"
     case srCyrillic = "sr-Cyrl"
+
+    /// The language the app speaks when it writes a request itself — a hint
+    /// in the empty field, a day put back by an arrow. Taken from the
+    /// interface’s preferred localisations.
+    ///
+    /// Parsing accepts all four whatever the interface is, because a person
+    /// may type `fri` in a Russian window. A hint is the other direction: the
+    /// app talking, and it talks in the language the rest of the window is in.
+    ///
+    /// Serbian arrives as `sr-Latn` or as a bare `sr`, and the scripts are
+    /// not interchangeable inside one line, so the Latin one is matched before
+    /// the bare prefix rather than after it.
+    public static func interface(_ localizations: [String]) -> QueryLanguage {
+        for identifier in localizations {
+            let code = identifier.lowercased()
+            if code.hasPrefix("ru") { return .ru }
+            if code.hasPrefix("sr-latn") { return .srLatin }
+            if code.hasPrefix("sr") { return .srCyrillic }
+            if code.hasPrefix("en") { return .en }
+        }
+        return .en
+    }
 }
 
 /// The words of one language. Weekdays run from Sunday, as in

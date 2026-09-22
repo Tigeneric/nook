@@ -278,3 +278,102 @@ struct QueryParserTests {
         #expect(query.start == TimeOfDay(hour: 9, minute: 30))
     }
 }
+
+@Suite("The hint in an empty field")
+struct QueryHintTests {
+    /// Monday, so that “the sheet’s next day” and `today + 1` differ only when
+    /// the sheet says so — and a Friday can be asked for separately.
+    let today = CalendarDate(year: 2026, month: 9, day: 21)
+
+    private func hint(at now: TimeOfDay, dates: [CalendarDate] = [], language: QueryLanguage = .en) -> String {
+        QueryParser.hint(today: today, now: now, dates: dates, language: language)
+    }
+
+    @Test("Within the day the hint is the next slot, with no day in it")
+    func withinTheDay() {
+        #expect(hint(at: TimeOfDay(hour: 15, minute: 40)) == "15:45 45m")
+    }
+
+    @Test("A hint within the day means today")
+    func withinTheDayMeansToday() throws {
+        let text = hint(at: TimeOfDay(hour: 15, minute: 40))
+        let query = try #require(QueryParser.parse(text, today: today, now: TimeOfDay(hour: 15, minute: 40)))
+        #expect(query.date == today)
+        #expect(query.start == TimeOfDay(hour: 15, minute: 45))
+    }
+
+    /// The defect this pair exists for: a bare `8:00` offered at 20:48 parses
+    /// as this morning, and ⏎ on it opens a range that is over.
+    @Test("Once the day is over the hint carries a day")
+    func pastTheEndOfTheDay() {
+        #expect(hint(at: TimeOfDay(hour: 20, minute: 48)) == "tomorrow 8:00 45m")
+    }
+
+    @Test("The hint never means a time already gone", arguments: [
+        TimeOfDay(hour: 20, minute: 48), TimeOfDay(hour: 23, minute: 59),
+    ])
+    func neverPast(now: TimeOfDay) throws {
+        let text = hint(at: now)
+        let query = try #require(QueryParser.parse(text, today: today, now: now))
+        #expect(query.date > today)
+    }
+
+    /// Friday evening: tomorrow is a Saturday the sheet does not hold, so the
+    /// hint has to take the sheet’s own next day instead.
+    @Test("The day comes from the sheet, not from today + 1")
+    func takesTheSheetsNextDay() {
+        let friday = CalendarDate(year: 2026, month: 9, day: 25)
+        let monday = CalendarDate(year: 2026, month: 9, day: 28)
+        let text = QueryParser.hint(
+            today: friday,
+            now: TimeOfDay(hour: 20, minute: 48),
+            dates: [friday, monday],
+            language: .en
+        )
+        #expect(text == "mon 8:00 45m")
+    }
+
+    @Test("The day is named in the language the app is speaking", arguments: [
+        (QueryLanguage.ru, "завтра 8:00 45m"),
+        (QueryLanguage.srLatin, "sutra 8:00 45m"),
+    ])
+    func speaksTheInterfaceLanguage(language: QueryLanguage, expected: String) {
+        #expect(hint(at: TimeOfDay(hour: 21), language: language) == expected)
+    }
+
+    @Test("A day words cannot name is written as a date", arguments: [
+        QueryLanguage.en, .ru,
+    ])
+    func fallsBackToADate(language: QueryLanguage) {
+        let faraway = today.adding(days: 9)
+        let text = QueryParser.hint(
+            today: today,
+            now: TimeOfDay(hour: 21),
+            dates: [faraway],
+            language: language
+        )
+        #expect(text == "30/09 8:00 45m")
+    }
+
+    @Test("Whatever the hint says, parse reads it back", arguments: [
+        TimeOfDay(hour: 8), TimeOfDay(hour: 15, minute: 40), TimeOfDay(hour: 20, minute: 48),
+    ])
+    func alwaysParses(now: TimeOfDay) throws {
+        for language in QueryLanguage.allCases {
+            let text = QueryParser.hint(today: today, now: now, dates: [], language: language)
+            #expect(QueryParser.parse(text, today: today, now: now) != nil, "\(language): \(text)")
+        }
+    }
+
+    @Test("The interface language is read off the localisations", arguments: [
+        (["ru-RU", "en"], QueryLanguage.ru),
+        (["sr-Latn-RS"], .srLatin),
+        (["sr-RS"], .srCyrillic),
+        (["en-GB"], .en),
+        (["de-DE"], .en),
+        ([], .en),
+    ])
+    func interfaceLanguage(localizations: [String], expected: QueryLanguage) {
+        #expect(QueryLanguage.interface(localizations) == expected)
+    }
+}

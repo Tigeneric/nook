@@ -59,14 +59,17 @@ struct OverlayView: View {
         QueryParser.parse(text, today: today, now: now)
     }
 
-    /// The hint shown in an empty field. ⇥ turns it into the request itself.
-    ///
-    /// The time is the nearest slot no earlier than `now`, not a hard-coded
-    /// “14:00”: at 15:40 such a hint offered the past, and ⇥ inserted it as
-    /// is. Once the grid’s day is over the start of the grid is shown —
-    /// there is nothing to offer until morning.
+    /// The hint shown in an empty field. ⇥ turns it into the request itself,
+    /// so it is built where `parse` can be held to reading it back — see
+    /// `QueryParser.hint`, which also explains why it grows a day in the
+    /// evening.
     private var placeholder: String {
-        "\(SheetGrid.suggestedStart(after: now)) 45m"
+        QueryParser.hint(
+            today: today,
+            now: now,
+            dates: store.schedule?.dates ?? [],
+            language: .interface(Bundle.main.preferredLocalizations)
+        )
     }
 
     var body: some View {
