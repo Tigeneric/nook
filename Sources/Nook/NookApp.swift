@@ -74,6 +74,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         overlay.restoreClipboardBeforeTermination()
     }
 
+    /// Opening the app again - Spotlight, Finder, `open` - while it runs brings
+    /// up settings. The menu bar icon is not guaranteed to be seen: macOS hides
+    /// what does not fit, under the notch included, and there is no API to keep
+    /// it in. This is the way back in that does not depend on it.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        settings.show()
+        return false
+    }
+
     /// `--show-overlay [query]` opens the panel right at launch: a hot key
     /// cannot be pressed from the command line, and both a person and an agent
     /// need to look at the overlay. `--show-settings` does the same for the
