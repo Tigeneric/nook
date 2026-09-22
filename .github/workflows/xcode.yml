@@ -1,0 +1,32 @@
+name: Xcode project
+
+# The Xcode project carries its own copy of the test-target definitions, so
+# that ⌘U works in the editor. This workflow is what keeps that copy honest:
+# if project.yml and the package drift apart, it fails here rather than in
+# someone's editor. No signing — the tests do not need a signed bundle.
+#
+# It is not on `push`: the check is worth a weekly run, not a run per commit,
+# because a macOS runner minute on a private repository is billed at ten
+# times the rate. Run it by hand from the Actions tab after touching
+# project.yml or Package.swift — or locally with `make test-xcode`.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  xcode:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the project
+        run: xcodegen generate
+      - name: Tests through xcodebuild
+        run: |
+          xcodebuild test \
+            -project Nook.xcodeproj \
+            -scheme NookApp \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO

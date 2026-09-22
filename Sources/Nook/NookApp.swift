@@ -1,0 +1,85 @@
+import SwiftUI
+import AppKit
+
+@main
+struct NookApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
+
+    var body: some Scene {
+        MenuBarExtra("Nook", systemImage: "rectangle.grid.3x2") {
+            // The combination is configurable, so the menu reads it rather
+            // than spelling it out: a stale ⌥Space here would be a lie.
+            if let combo = delegate.preferences.hotKey {
+                Button("Show overlay  \(combo.description)") { delegate.overlay.show() }
+            } else {
+                Button("Show overlay") { delegate.overlay.show() }
+            }
+            Button("Settings…") { delegate.settings.show() }
+            Divider()
+            Button("Quit") { NSApp.terminate(nil) }
+        }
+    }
+}
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// `--demo` puts a made-up day behind the panel and settings of its own
+    /// behind the app, so it can be shown — and photographed — without a sheet.
+    /// See `Demo`: the README’s pictures cannot be taken against the real one.
+    private static let isDemo = CommandLine.arguments.contains("--demo")
+
+    let preferences: Preferences = isDemo ? Demo.preferences() : Preferences()
+    let loginItem = LoginItem()
+    // The types are spelled out: these three refer to one another, and left to
+    // inference the compiler has to resolve a cycle it cannot.
+    lazy var overlay: OverlayController = OverlayController(
+        preferences: preferences,
+        sourceFactory: Self.isDemo ? { _ in DemoSource() } : nil
+    ) { [weak self] in
+        guard let self else { return }
+        // While no name is set, settings opened from the overlay land on the
+        // name field — that is the only thing the overlay had to say about
+        // them, whether it was the ⓘ or ⌘, that asked.
+        settings.show(focusing: preferences.bookingName == nil ? .bookingName : nil)
+    }
+    lazy var hotKeys: HotKeyController = HotKeyController(preferences: preferences) { [weak self] in
+        self?.overlay.toggle()
+    }
+    lazy var settings: SettingsWindow = SettingsWindow(
+        preferences: preferences,
+        loginItem: loginItem,
+        hotKeys: hotKeys
+    )
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // The app lives in the menu bar: no Dock icon, no window at launch.
+        NSApp.setActivationPolicy(.accessory)
+
+        hotKeys.apply()
+        if let rejected = hotKeys.rejected {
+            NSLog("Nook: could not register \(rejected) — the combination is taken by another app")
+        }
+
+        // Without a sheet there is nothing to read, so a first run starts in settings.
+        if CommandLine.arguments.contains("--show-settings") {
+            settings.show()
+        } else if preferences.isConfigured {
+            showOverlayIfRequested()
+        } else {
+            settings.show()
+        }
+    }
+
+    /// `--show-overlay [query]` opens the panel right at launch: a hot key
+    /// cannot be pressed from the command line, and both a person and an agent
+    /// need to look at the overlay. `--show-settings` does the same for the
+    /// settings window, which otherwise opens only from the menu bar.
+    /// For example:
+    /// `Nook.app/Contents/MacOS/Nook --show-overlay "14:00 45m"`
+    private func showOverlayIfRequested() {
+        let arguments = CommandLine.arguments
+        guard let flag = arguments.firstIndex(of: "--show-overlay") else { return }
+        let query = arguments.indices.contains(flag + 1) ? arguments[flag + 1] : ""
+        overlay.show(query: query)
+    }
+}

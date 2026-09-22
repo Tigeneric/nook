@@ -1,0 +1,1615 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ is free" : {
+      "comment" : "Example: “C2 is free”",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ свободна"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ је слободна"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ je slobodna"
+          }
+        }
+      }
+    },
+    "%@ is taken by another app — pick another one" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ занято другим приложением — выберите другое"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ је заузето другом апликацијом — изаберите другу"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ je zauzeto drugom aplikacijom — izaberite drugu"
+          }
+        }
+      }
+    },
+    "%@ is taken: %@" : {
+      "comment" : "The space and the names of whoever holds it",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ занята: %2$@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ је заузета: %2$@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ je zauzeta: %2$@"
+          }
+        }
+      }
+    },
+    "%@ twice to try again" : {
+      "comment" : "The hot key: showing the overlay again re-reads the sheet",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ дважды — попробовать снова"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ двапут — покушај поново"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ dvaput — pokušaj ponovo"
+          }
+        }
+      }
+    },
+    "%@: that time is outside the grid" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: это время вне сетки"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: то време је ван мреже"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: to vreme je van mreže"
+          }
+        }
+      }
+    },
+    "A combination needs ⌘, ⌥, ⌃ or ⇧: a bare key would be taken away from every other app. Function keys may stand alone. Whatever is set here, the overlay is also reachable from the menu bar." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сочетанию нужен ⌘, ⌥, ⌃ или ⇧: клавиша без модификатора отнималась бы у всех остальных приложений. Функциональные клавиши можно ставить одни. Что бы здесь ни стояло, оверлей всегда доступен из меню-бара."
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Комбинацији треба ⌘, ⌥, ⌃ или ⇧: тастер без модификатора био би одузет свим другим апликацијама. Функцијски тастери могу стајати сами. Шта год да је овде подешено, преглед је увек доступан из мени траке."
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kombinaciji treba ⌘, ⌥, ⌃ ili ⇧: taster bez modifikatora bio bi oduzet svim drugim aplikacijama. Funkcijski tasteri mogu stajati sami. Šta god da je ovde podešeno, pregled je uvek dostupan iz meni trake."
+          }
+        }
+      }
+    },
+    "All floors" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все этажи"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сви спратови"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Svi spratovi"
+          }
+        }
+      }
+    },
+    "Between floors is a walk: an answer on the other floor is often no answer at all. A space named in the query is still shown, whichever floor it is on." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Между этажами идти ногами, и ответ «свободна на другом этаже» часто не ответ. Помещение, названное в запросе, показывается в любом случае — на каком бы этаже оно ни было."
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Између спратова се иде пешке, па одговор са другог спрата често и није одговор. Просторија наведена у упиту приказује се у сваком случају, без обзира на спрат."
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Između spratova se ide peške, pa odgovor sa drugog sprata često i nije odgovor. Prostorija navedena u upitu prikazuje se u svakom slučaju, bez obzira na sprat."
+          }
+        }
+      }
+    },
+    "Booking sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Таблица броней"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Табела резервација"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tabela rezervacija"
+          }
+        }
+      }
+    },
+    "Checking against the sheet…" : {
+      "comment" : "While the sheet is still loading, under the name field in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сверяю с таблицей…"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверавам са табелом…"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proveravam sa tabelom…"
+          }
+        }
+      }
+    },
+    "Couldn’t change the login item: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось изменить объект входа: %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Није успела промена ставке пријаве: %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nije uspela promena stavke prijave: %@"
+          }
+        }
+      }
+    },
+    "Current: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сейчас: %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тренутно: %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trenutno: %@"
+          }
+        }
+      }
+    },
+    "Doesn’t look like a sheet link or ID" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не похоже на ссылку или идентификатор таблицы"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не личи на линк или идентификатор табеле"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne liči na link ili identifikator tabele"
+          }
+        }
+      }
+    },
+    "Floor %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ этаж"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@. спрат"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@. sprat"
+          }
+        }
+      }
+    },
+    "Forget" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Забыть"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заборави"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaboravi"
+          }
+        }
+      }
+    },
+    "Found in %@ bookings, none of them ahead" : {
+      "comment" : "The name is in the sheet, but everything it matches has already passed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найдено броней: %@, но все уже прошли"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нађено резервација: %@, али све су већ прошле"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nađeno rezervacija: %@, ali sve su već prošle"
+          }
+        }
+      }
+    },
+    "Found in %@ bookings, the next one %@" : {
+      "comment" : "How many cells the name matches, and the nearest one. Example: “Found in 12 bookings, the next one C1 · 22/09 19:00”",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найдено броней: %1$@, ближайшая — %2$@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нађено резервација: %1$@, најближа — %2$@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nađeno rezervacija: %1$@, najbliža — %2$@"
+          }
+        }
+      }
+    },
+    "Free:" : {
+      "comment" : "Start of the line listing free spaces",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свободны:"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слободне:"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slobodne:"
+          }
+        }
+      }
+    },
+    "Launch at login" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запускать при входе"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Покрени при пријави"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokreni pri prijavi"
+          }
+        }
+      }
+    },
+    "Link to the sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылка на таблицу"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Линк ка табели"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link ka tabeli"
+          }
+        }
+      }
+    },
+    "Menu bar → Settings… → paste the link to your booking sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Меню-бар → «Настройки…» → вставьте ссылку на таблицу броней"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мени трака → „Подешавања…“ → налепите линк ка табели резервација"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meni traka → „Podešavanja…“ → nalepite link ka tabeli rezervacija"
+          }
+        }
+      }
+    },
+    "Network error %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка сети %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мрежна грешка %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mrežna greška %@"
+          }
+        }
+      }
+    },
+    "No network — can’t reach the sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет сети — до таблицы не достучаться"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нема мреже — табела није доступна"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nema mreže — tabela nije dostupna"
+          }
+        }
+      }
+    },
+    "No sheet configured" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Таблица не настроена"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Табела није подешена"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tabela nije podešena"
+          }
+        }
+      }
+    },
+    "Nook Settings" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки Nook"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nook подешавања"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nook podešavanja"
+          }
+        }
+      }
+    },
+    "Nook lives in the menu bar and answers a hotkey; without this it has to be started by hand after every restart." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nook живёт в меню-баре и отвечает на хоткей; без этого его придётся запускать руками после каждой перезагрузки."
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nook живи у мени траци и одазива се на пречицу; без овога треба га ручно покретати после сваког рестарта."
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nook živi u meni traci i odaziva se na prečicu; bez ovoga treba ga ručno pokretati posle svakog restarta."
+          }
+        }
+      }
+    },
+    "Not set up" : {
+      "comment" : "Under the heading while no name has been set; the ⓘ next to the heading leads to settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не настроено"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Није подешено"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nije podešeno"
+          }
+        }
+      }
+    },
+    "Not set yet — the overlay has nothing to read" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока не настроена — оверлею нечего читать"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Још није подешена — преглед нема шта да чита"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Još nije podešena — pregled nema šta da čita"
+          }
+        }
+      }
+    },
+    "Nothing in the sheet under this name yet — that is how it looks until your first booking" : {
+      "comment" : "The name matches nothing and nothing resembles it — most likely a person who has not booked yet",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Под этим именем в таблице пока ничего нет — так и будет до первой брони"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Под овим именом у табели још нема ничега — тако ће бити до прве резервације"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pod ovim imenom u tabeli još nema ničega — tako će biti do prve rezervacije"
+          }
+        }
+      }
+    },
+    "Nothing in the sheet under this name. Did you mean “%@”?" : {
+      "comment" : "The name matches nothing, but a near-miss sits in the sheet — likely a typo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Под этим именем в таблице ничего нет. Возможно, «%@»?"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Под овим именом у табели нема ничега. Можда «%@»?"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pod ovim imenom u tabeli nema ničega. Možda „%@“?"
+          }
+        }
+      }
+    },
+    "Nothing planned" : {
+      "comment" : "Under the heading when a name is set but no booking of that person lies ahead",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не запланировано"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Није планирано"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nije planirano"
+          }
+        }
+      }
+    },
+    "Off" : {
+      "comment" : "No hot key at all",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выключено"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Искључено"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isključeno"
+          }
+        }
+      }
+    },
+    "Open it again from the menu bar to try again" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Откройте снова из меню-бара, чтобы попробовать ещё раз"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отвори поново из мени траке да покушаш опет"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otvori ponovo iz meni trake da pokušaš opet"
+          }
+        }
+      }
+    },
+    "Paste the whole link from the browser. The sheet has to be readable by link: Nook does no authorization." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Можно вставить ссылку из браузера целиком. Таблица должна быть доступна по ссылке на чтение — авторизацию Nook не делает."
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Налепите цео линк из прегледача. Табела мора бити доступна за читање преко линка — Nook не ради пријављивање."
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nalepite ceo link iz pregledača. Tabela mora biti dostupna za čitanje preko linka — Nook ne radi prijavljivanje."
+          }
+        }
+      }
+    },
+    "Press a combination" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите сочетание"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Притисните комбинацију"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pritisnite kombinaciju"
+          }
+        }
+      }
+    },
+    "Query: “14:00 45m”, “now 30m C2”, “fri 14:00”, “%@ 11:00 1h”" : {
+      "comment" : "Example requests — the words inside are translated too: the parser understands all three languages. %@ is a dd/mm date taken from the sheet",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запрос: «14:00 45m», «сейчас 30м C2», «пт 14:00», «%@ 11:00 1h»"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Упит: „14:00 45m“, „сад 30m C2“, „пет 14:00“, „%@ 11:00 1h“"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upit: „14:00 45m“, „sad 30m C2“, „pet 14:00“, „%@ 11:00 1h“"
+          }
+        }
+      }
+    },
+    "Quit" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выйти"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изађи"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izađi"
+          }
+        }
+      }
+    },
+    "Reading the sheet…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Читаю таблицу…"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Читам табелу…"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Čitam tabelu…"
+          }
+        }
+      }
+    },
+    "Record…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записать…"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сними…"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snimi…"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сачувај"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sačuvaj"
+          }
+        }
+      }
+    },
+    "Search on" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Искать на"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тражи на"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traži na"
+          }
+        }
+      }
+    },
+    "Set your name in the sheet…" : {
+      "comment" : "Tooltip and accessibility label of the ⓘ button that opens settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Указать своё имя в таблице…"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Наведите своје име у табели…"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navedite svoje ime u tabeli…"
+          }
+        }
+      }
+    },
+    "Settings…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки…"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подешавања…"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podešavanja…"
+          }
+        }
+      }
+    },
+    "Show overlay" : {
+      "comment" : "The menu item when no hot key is set",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать оверлей"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прикажи преглед"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prikaži pregled"
+          }
+        }
+      }
+    },
+    "Show overlay  %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать оверлей  %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прикажи преглед  %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prikaži pregled  %@"
+          }
+        }
+      }
+    },
+    "Show the overlay with" : {
+      "comment" : "Header of the hot key section in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать оверлей по"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прикажи преглед на"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prikaži pregled na"
+          }
+        }
+      }
+    },
+    "Something else" : {
+      "comment" : "The line of the radio list that holds a recorded combination",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другое сочетание"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Друга комбинација"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Druga kombinacija"
+          }
+        }
+      }
+    },
+    "Tab %@ came back not as a sheet — check the link in settings" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладка %@ вернулась не таблицей — проверьте ссылку в настройках"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Картица %@ није стигла као табела — проверите линк у подешавањима"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartica %@ nije stigla kao tabela — proverite link u podešavanjima"
+          }
+        }
+      }
+    },
+    "Tab %@ has a different set of dates than the others" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вкладки %@ другой набор дат, чем у остальных"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Картица %@ има другачији скуп датума од осталих"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartica %@ ima drugačiji skup datuma od ostalih"
+          }
+        }
+      }
+    },
+    "Tab %@ is laid out unexpectedly: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладка %1$@ устроена неожиданно: %2$@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Картица %1$@ је неочекивано уређена: %2$@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartica %1$@ je neočekivano uređena: %2$@"
+          }
+        }
+      }
+    },
+    "Tab %@ is not in the sheet — check the link in settings" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладки %@ в таблице нет — проверьте ссылку в настройках"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Картице %@ нема у табели — проверите линк у подешавањима"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartice %@ nema u tabeli — proverite link u podešavanjima"
+          }
+        }
+      }
+    },
+    "Taken:" : {
+      "comment" : "Start of the line listing taken spaces",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заняты:"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заузете:"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zauzete:"
+          }
+        }
+      }
+    },
+    "That day is not in the sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этого дня нет в таблице"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тог дана нема у табели"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tog dana nema u tabeli"
+          }
+        }
+      }
+    },
+    "That day is not in the sheet — it holds %@ dates, %@…%@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этого дня нет в таблице — в ней %1$@ дат, %2$@…%3$@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тог дана нема у табели — у њој је %1$@ датума, %2$@…%3$@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tog dana nema u tabeli — u njoj je %1$@ datuma, %2$@…%3$@"
+          }
+        }
+      }
+    },
+    "That time is outside the grid — the day runs %@ to %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это время вне сетки — день идёт с %1$@ до %2$@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "То време је ван мреже — дан траје од %1$@ до %2$@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To vreme je van mreže — dan traje od %1$@ do %2$@"
+          }
+        }
+      }
+    },
+    "The grid is the next step" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сетка — следующий шаг"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мрежа је следећи корак"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mreža je sledeći korak"
+          }
+        }
+      }
+    },
+    "The sheet answered with %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Таблица ответила кодом %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Табела је одговорила кодом %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tabela je odgovorila kodom %@"
+          }
+        }
+      }
+    },
+    "The sheet didn’t answer in time" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Таблица не ответила вовремя"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Табела није одговорила на време"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tabela nije odgovorila na vreme"
+          }
+        }
+      }
+    },
+    "The sheet is closed to reading — open access by link" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Таблица закрыта на чтение — откройте доступ по ссылке"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Табела је затворена за читање — отворите приступ преко линка"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tabela je zatvorena za čitanje — otvorite pristup preko linka"
+          }
+        }
+      }
+    },
+    "With this set, the overlay opens on your own nearest bookings. A cell holds nothing but a name, so this is the only way to tell yours from everyone else’s. Write it as it stands in the sheet: case, accents and spaces are disregarded, so “AnaPetrovic” and “Ana Petrović” are one name — everything else has to match." : {
+      "comment" : "Footer under the name field in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Если заполнить, оверлей будет открываться со списком ваших ближайших броней. В ячейке таблицы нет ничего, кроме имени, поэтому отличить ваши брони от чужих иначе нечем. Пишите так, как стоит в таблице: регистр, диакритика и пробелы не считаются, поэтому «AnaPetrovic» и «Ana Petrović» — одно имя, а всё остальное должно совпасть."
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ако је попуњено, преглед се отвара са вашим најближим резервацијама. У ћелији не стоји ништа осим имена, па се ваше резервације другачије не могу одвојити од туђих. Пишите како стоји у табели: велика слова, дијакритика и размаци се не рачунају, па су «AnaPetrovic» и «Ana Petrović» једно име — све остало мора да се поклопи."
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ako je popunjeno, pregled se otvara sa vašim najbližim rezervacijama. U ćeliji ne stoji ništa osim imena, pa se vaše rezervacije drugačije ne mogu odvojiti od tuđih. Pišite kako stoji u tabeli: velika slova, dijakritika i razmaci se ne računaju, pa su „AnaPetrovic“ i „Ana Petrović“ jedno ime — sve ostalo mora da se poklopi."
+          }
+        }
+      }
+    },
+    "Your bookings" : {
+      "comment" : "Settings section, and the heading above a person’s own nearest bookings in the overlay",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваши брони"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваше резервације"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše rezervacije"
+          }
+        }
+      }
+    },
+    "Your name in the sheet" : {
+      "comment" : "Placeholder of the name field in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваше имя в таблице"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваше име у табели"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaše ime u tabeli"
+          }
+        }
+      }
+    },
+    "in %@ min" : {
+      "comment" : "How soon a booking is, within the hour. Example: “in 20 min”",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "через %@ мин"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "за %@ мин"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "za %@ min"
+          }
+        }
+      }
+    },
+    "now" : {
+      "comment" : "How soon a booking is: it is under way at this moment",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "сейчас"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "сада"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sada"
+          }
+        }
+      }
+    },
+    "today" : {
+      "comment" : "How soon a booking is: later today, more than an hour away",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "сегодня"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "данас"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "danas"
+          }
+        }
+      }
+    },
+    "window %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "окно %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "прозор %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "prozor %@"
+          }
+        }
+      }
+    },
+    "window %@, back-to-back" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "окно %@, вплотную"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "прозор %@, без паузе"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "prozor %@, bez pauze"
+          }
+        }
+      }
+    },
+    "window %@, booking right after" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "окно %@, за ним бронь вплотную"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "прозор %@, резервација тик после"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "prozor %@, rezervacija tik posle"
+          }
+        }
+      }
+    },
+    "window %@, booking right before" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "окно %@, перед ним бронь вплотную"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "прозор %@, резервација тик пре"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "prozor %@, rezervacija tik pre"
+          }
+        }
+      }
+    },
+    "⇥ — complete the query · ↑↓ — change what the cursor is on · ⏎ — open in the sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — дополнить запрос · ↑↓ — править то, на чём курсор · ⏎ — открыть в таблице"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — допуни упит · ↑↓ — мења оно на чему је курсор · ⏎ — отвори у табели"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — dopuni upit · ↑↓ — menja ono na čemu je kursor · ⏎ — otvori u tabeli"
+          }
+        }
+      }
+    },
+    "⇥ — start a query · ↑↓ — pick a booking · ⏎ — open it in the sheet" : {
+      "comment" : "Hint under an empty query line, when there are bookings to walk",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — начать запрос · ↑↓ — выбрать бронь · ⏎ — открыть её в таблице"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — почни упит · ↑↓ — изабери резервацију · ⏎ — отвори је у табели"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — počni upit · ↑↓ — izaberi rezervaciju · ⏎ — otvori je u tabeli"
+          }
+        }
+      }
+    },
+    "⏎ — open %@ in the sheet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ — открыть %@ в таблице"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ — отвори %@ у табели"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ — otvori %@ u tabeli"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

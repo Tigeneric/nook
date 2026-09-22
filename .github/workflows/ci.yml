@@ -1,0 +1,32 @@
+name: CI
+
+# macOS runners bill at ten times the rate, and while the repository is
+# private that comes out of a monthly allowance rather than being free. Hence
+# the frugality below: documentation-only pushes skip the run, and a
+# superseded run is cancelled rather than left to finish.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    # The logic lives in NookCore and NookSheet and needs no network, so CI
+    # runs `swift test` only: building the .app would require signing.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift version
+        run: swift --version
+      - name: Tests
+        run: swift test

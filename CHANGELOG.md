@@ -1,0 +1,145 @@
+# Changelog
+
+Versions follow [semantic versioning](https://semver.org). While the major is
+zero the shape of the thing is still being settled: the calendar grid, which is
+the point of the app, is not built yet.
+
+The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
+release is that edit plus a `git tag`.
+
+## 0.1.0 — 2026-09-22
+
+The first version that does the job end to end, in text rather than on a grid.
+
+### Added
+
+- Reads eight space tabs of a Google Sheet in parallel over CSV export, with
+  no authorisation, and re-reads them on every showing — the sheet is edited
+  during the day.
+- An overlay on a non-activating `NSPanel`: it comes up on ⌥Space over
+  anything, including full-screen apps, and takes keyboard input without
+  stealing focus.
+- Requests in free order: time, duration, space and day — `14:00 45m`,
+  `now 30m C2`, `fri 14:00`, `23/09 11:00 1h 30m`. A weekday means the nearest
+  one ahead; dates use slashes. Past an hour a duration is written as hours with
+  minutes, in either language and either spelling (`1h 30m`, `1ч 30м`,
+  `1h30m`): `150m` is legible only after doing the arithmetic.
+- Answers with the free and taken spaces, and with the bounds of the free run
+  around the request — a half-hour gap between two bookings and an afternoon
+  that is empty until evening are told apart.
+- ↑↓ edit whatever the caret is on: hour, minutes, duration, day, space.
+  Spaces cycle through the free ones, days through the ones the sheet holds.
+- ⇥ completes the request part by part, showing what it will add next in grey.
+  A named day on its own is a beginning too: `tomorrow`, `завтра`, `wed`,
+  `23/09` show the hour they would take, and ⇥ enters it.
+- ⏎ opens the exact cell of the right tab in the browser. The app never writes
+  to the sheet.
+- Settings: the sheet link, a floor filter, and launching at login.
+- English, Russian and Serbian in both scripts, chosen by the system language
+  and falling back to English. The parser understands the words of every
+  language at once, whichever one the interface is in.
+- The source of the schedule sits behind a `ScheduleSource` protocol: the core
+  does not know the shape of a Google Sheet — tab ids, the export address and
+  cell addressing live in `NookSheet`, and `Space` carries an opaque
+  `sourceKey` rather than a `gid`. Keeping bookings somewhere else means
+  writing one conformance, which a test demonstrates with an in-memory source.
+- The overlay opens on your own nearest bookings — up to three lines of “where,
+  when, how soon”. Within the hour the minutes are counted (`in 20 min`), a
+  booking already under way says `now`, and one on another day carries its
+  weekday and date instead. The imminent line is marked by brightness rather
+  than by colour: a hue would have to be chosen for each theme separately, and
+  red — tried first — read as an error. Which rows are yours is decided by a
+  name set in settings: a cell holds nothing but text, and the sheet never says
+  who is reading it.
+- A name matches a cell on exact equality, with case, diacritics and whitespace
+  disregarded — so `AnaPetrovic` and `Ana Petrović` are one name, because
+  whether a name carries a space is not a fact about the person: the sheet is
+  typed by hand and the same member appears both ways. Nothing looser: a first
+  name on its own would collect a namesake’s day as readily as your own. The
+  price is the numbered form a company writes — `Acme`, `Acme 2`, `Acme 3` are
+  three names here, and `Acme` finds none of them.
+- The block keeps one shape in every state — the heading, then either the rows,
+  “Nothing planned”, or “Not set up” — so the panel does not jump in height and
+  an empty state reads as an answer rather than as a failed load. While no name
+  is set, an ⓘ on the right of the heading leads to settings.
+- ⌘, opens settings from the overlay, the way it does in every other Mac
+  application. Handled on the panel rather than on the button: the shortcut
+  belongs to every state, and the query field’s text editor takes plain key
+  presses first — a key equivalent goes down another path. While no name is
+  set, both the ⓘ and ⌘, land the caret in the name field.
+- Settings check the typed name against the sheet: how many bookings carry it
+  and which is next. Counted over the whole sheet, both floors and the past
+  included — the question is how the name is spelled, not where to sit. The
+  sheet is fetched once per opening of the window — and again if the link to it
+  changes — while matching is local, so the answer follows the keystrokes
+  rather than the network.
+- When the name matches nothing, the answer does not accuse. A name matching
+  nothing is either a typo or somebody who has not booked yet, and the sheet
+  cannot tell those apart — so it says “nothing under this name yet, that is how
+  it looks until your first booking”. Unless a near-miss sits in the sheet, and
+  then it asks “did you mean …?” — `Agenda.closestName(to:in:)`, whole-name edit
+  distance with whitespace disregarded, up to a fifth of the longer name.
+- ↑↓ walk the listed bookings while the query line is empty, and ⏎ opens the
+  chosen one in the sheet. An empty line has no fragment to edit, which is the
+  one state where the arrows are free; the first character typed clears the
+  selection and hands them back to the stepper. Nothing is selected when the
+  overlay opens, so ⏎ still does nothing until an arrow has been pressed.
+- The focus is one thing and it moves down one column: the query line, then the
+  rows. ↓ from the line enters at the first booking, ↑ from the first booking
+  returns to the line, ↑ in the line does nothing because nothing is above it,
+  and ↓ on the last booking stays there. Nothing wraps — the list is on screen
+  in full.
+- The caret stops blinking while the focus is over the list, otherwise the
+  focus is shown in two places at once. The field stays first responder,
+  because typing has to keep working and the first character brings the focus
+  back, so the caret is hidden rather than surrendered.
+- The chosen row takes a neutral fill rather than the accent: the block is
+  deliberately free of colour, and a selection is a state of interaction rather
+  than a piece of information. The hint line below changes with the meaning of
+  the keys, otherwise the arrows over the list are undiscoverable.
+- `Agenda.all(for:in:spaces:)` — every booking of a person over the sheet’s
+  whole period. `upcoming` is now a filter over it.
+- `Agenda.selection(from:by:count:)` — where an arrow moves the selection,
+  kept out of the view so the edge behaviour is under test.
+- The hot key is a setting: a few combinations to pick from, a recorder for
+  your own, and “off”. A combination requires a modifier — a bare key would be
+  taken away from every other application — with function keys the exception.
+  The binding is stored by physical key code, so it survives a keyboard-layout
+  switch; the label follows the layout, which is why `⌃⌥N` reads `⌃⌥Т` on a
+  Russian one. A combination another application already holds is refused by
+  macOS, and settings say so rather than leaving a key that never fires.
+- `--show-settings` opens the settings window at launch, the way
+  `--show-overlay` opens the panel: otherwise it is reachable only by mouse.
+- `--demo` puts a made-up day behind the panel and a settings domain of its own
+  behind the app, so it can be tried — and photographed for the README —
+  without a sheet. The real sheet is read without authorisation, so a
+  screenshot of it would publish the name of everybody who booked a room that
+  week, and a PNG is the one thing the pre-commit hook cannot read: here the
+  rule holds by construction rather than by checking.
+
+### Notes
+
+- The overlay panel is 460 points wide. With the bookings listed, a wider one
+  put the right-hand “how soon” column a hundred points away from the times and
+  the gap read as an empty column. The floor is set by the line of keys at the
+  bottom, on screen in every state: measured in the fonts the app draws it in,
+  its widest translation is 416 pt against 420 pt of content — four points of
+  slack, and at 440 it wraps. Six of the catalogue’s thirty-six strings do wrap
+  at this width, all of them rare; the content wraps rather than truncates, so
+  the panel gains a row and still says everything. Narrower means shortening
+  the hints, not the window.
+- `NookTests` — the test target for the app module — is declared in
+  `project.yml` as well, so ⌘U and the weekly Xcode workflow run it too. It
+  needs an explicit `TEST_HOST`: XcodeGen derives the path from the target
+  name, and the product is renamed from `NookApp` to `Nook`.
+- The sheet identifier is never stored in the repository and never printed in
+  an error: the sheet is readable without authorisation, so the ID amounts to
+  access to every booking name.
+- Spaces and their `gid`s are declared in `Sources/NookCore/Space.swift`;
+  pointing Nook at another coworking means editing that list.
+- Five strings interpolate a number as a string — `\(String(count))` — on
+  purpose. At runtime an `Int` produces the key `%lld`, while Xcode’s string
+  extractor cannot resolve the type and writes `%@`: the catalogue then grows
+  keys nobody ever looks up, and the editor re-adds them after every build.
+  `String` is unambiguous, so the key the app asks for, the key in the
+  catalogue and the key the extractor writes stay one and the same.
