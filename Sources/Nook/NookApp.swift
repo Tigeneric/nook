@@ -5,6 +5,18 @@ import AppKit
 struct NookApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
+    init() {
+        // Where the menu bar icon goes, in points from the right edge of the
+        // screen. Unset, macOS puts a new icon leftmost, right by the notch,
+        // and on a full menu bar that is the one hidden under it. A registered
+        // default only fills the gap: once the icon is ⌘-dragged, macOS stores
+        // the person's position under the same key and that one wins.
+        // `Item-0` is the autosave name SwiftUI gives the MenuBarExtra's item.
+        UserDefaults.standard.register(defaults: [
+            "NSStatusItem Preferred Position Item-0": 100,
+        ])
+    }
+
     var body: some Scene {
         MenuBarExtra("Nook", systemImage: "rectangle.grid.3x2") {
             // The combination is configurable, so the menu reads it rather

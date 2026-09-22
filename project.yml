@@ -43,6 +43,8 @@ targets:
         PRODUCT_NAME: Nook
         PRODUCT_BUNDLE_IDENTIFIER: com.khabirov.nook
         INFOPLIST_FILE: Sources/Nook/Info.plist
+        # Sources/Nook/Assets.xcassets, rendered from tools/AppIcon.svg.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     # So that ⌘U in Xcode runs the same tests CI does.
     scheme:
       testTargets:
