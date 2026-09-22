@@ -15,7 +15,7 @@ struct OverlayView: View {
     let preferences: Preferences
     let today: CalendarDate
     let now: TimeOfDay
-    let onOpen: (Space, Query) -> Void
+    let onOpen: (Space, Query, _ copyName: Bool) -> BookingOpenResult
     let onClose: () -> Void
     let onSettings: () -> Void
     let onResize: (CGSize) -> Void
@@ -27,6 +27,11 @@ struct OverlayView: View {
     /// Nothing is selected when the overlay opens: ⏎ would then lead into the
     /// browser without anybody having chosen anything.
     @State private var selection: Int?
+    /// ⏎ found the clipboard impossible to put back, so nothing was copied and
+    /// nothing opened. The line below says so, and the next ⏎ goes ahead
+    /// without the copy — the decision to lose the shortcut rather than the
+    /// clipboard belongs to the person, not to the app.
+    @State private var clipboardRefused = false
 
     init(
         store: ScheduleStore,
@@ -34,7 +39,7 @@ struct OverlayView: View {
         today: CalendarDate,
         now: TimeOfDay,
         query: String = "",
-        onOpen: @escaping (Space, Query) -> Void,
+        onOpen: @escaping (Space, Query, Bool) -> BookingOpenResult,
         onClose: @escaping () -> Void,
         onSettings: @escaping () -> Void = {},
         onResize: @escaping (CGSize) -> Void = { _ in }
@@ -440,7 +445,20 @@ struct OverlayView: View {
                 }
                 if let target {
                     HStack(spacing: 8) {
-                        hint(Text("⏎ — open \(target.id) in the sheet"))
+                        // Three forms, because ⏎ does three different things.
+                        // With a name set it also copies it, and a hint that
+                        // did not say so would leave the ⌘V undiscoverable;
+                        // after a refusal it opens without the copy, and that
+                        // has to be said before the press rather than after.
+                        if clipboardRefused {
+                            Text("Can’t put your clipboard back afterwards, so the name wasn’t copied — ⏎ again to open \(target.id) and pick the name there")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                        } else if preferences.bookingName != nil {
+                            hint(Text("⏎ — open \(target.id) in the sheet, name copied"))
+                        } else {
+                            hint(Text("⏎ — open \(target.id) in the sheet"))
+                        }
                         // The window describes what ⏎ will open, so it sits
                         // on the same line. When a space is named the window
                         // is already shown above, on its own line.
@@ -610,7 +628,7 @@ struct OverlayView: View {
         // line there is no request to open, and until an arrow has been pressed
         // there is nothing chosen either — so ⏎ still does nothing by itself.
         if let booking = selectedBooking {
-            onOpen(booking.space, Query(
+            act(on: booking.space, Query(
                 date: booking.date,
                 start: booking.start,
                 minutes: booking.end.minutes - booking.start.minutes,
@@ -622,7 +640,18 @@ struct OverlayView: View {
         let visible = preferences.spaces(from: schedule.spaces)
         let free = Availability.fits(query.anySpace, in: schedule).filter(visible.contains)
         guard let space = openCandidate(for: query, in: schedule, visibleFree: free) else { return }
-        onOpen(space, query)
+        act(on: space, query)
+    }
+
+    /// The copy is skipped on the press that follows a refusal — the overlay
+    /// has already said what will be lost, and this press is the answer.
+    private func act(on space: Space, _ query: Query) {
+        switch onOpen(space, query, !clipboardRefused) {
+        case .clipboardUnavailable:
+            clipboardRefused = true
+        case .opened, .nothingToOpen:
+            break
+        }
     }
 
     private func openCandidate(for query: Query, in schedule: Schedule, visibleFree: [Space]) -> Space? {

@@ -2,12 +2,26 @@ import AppKit
 import SwiftUI
 import NookCore
 
+/// What ⏎ managed to do. The overlay needs to know, because one of these is
+/// the single case where it stays on screen instead of stepping aside.
+enum BookingOpenResult {
+    case opened
+    /// The clipboard holds something that cannot be put back afterwards, so
+    /// the name was not copied and nothing was opened — the person’s own
+    /// clipboard is worth more than the convenience. Pressing ⏎ again opens
+    /// the sheet without copying, and the name is then picked in the sheet.
+    case clipboardUnavailable
+    /// The source offers nowhere to write. Nothing for the overlay to say.
+    case nothingToOpen
+}
+
 /// Showing and hiding the overlay, re-reading the schedule on every showing.
 @MainActor
 final class OverlayController {
     private let preferences: Preferences
     private let store: ScheduleStore
     private let onSettings: () -> Void
+    private let clipboard: BookingClipboard
     private var panel: OverlayPanel?
 
     /// `onSettings` is injected rather than reached for: the overlay knows
@@ -23,6 +37,7 @@ final class OverlayController {
         self.store = sourceFactory.map { ScheduleStore(preferences: preferences, sourceFactory: $0) }
             ?? ScheduleStore(preferences: preferences)
         self.onSettings = onSettings
+        self.clipboard = BookingClipboard()
     }
 
     var isVisible: Bool { panel?.isVisible ?? false }
@@ -56,6 +71,10 @@ final class OverlayController {
         panel?.orderOut(nil)
     }
 
+    func restoreClipboardBeforeTermination() {
+        clipboard.restoreBeforeTermination()
+    }
+
     private func makePanel() -> OverlayPanel {
         let panel = OverlayPanel(contentRect: NSRect(x: 0, y: 0, width: OverlayMetrics.width, height: 160))
         panel.onSettings = { [weak self] in self?.openSettings() }
@@ -77,7 +96,9 @@ final class OverlayController {
             today: CalendarDate(Date()),
             now: Self.timeOfDayNow(),
             query: query,
-            onOpen: { [weak self] space, query in self?.open(space, query) },
+            onOpen: { [weak self] space, query, copyName in
+                self?.open(space, query, copyName: copyName) ?? .nothingToOpen
+            },
             onClose: { [weak self] in self?.hide() },
             onSettings: { [weak self] in self?.openSettings() },
             onResize: { [weak self, weak panel] size in
@@ -96,16 +117,34 @@ final class OverlayController {
         center(panel)
     }
 
-    /// Opens the space tab with the booking’s cells selected. The first
-    /// version does not write to the sheet — a person types the name in
-    /// themselves.
-    private func open(_ space: Space, _ query: Query) {
+    /// Opens the space tab with the booking’s cells selected, and puts the
+    /// person’s name on the clipboard so that the whole span takes one ⌘V.
+    ///
+    /// The first version does not write to the sheet — the keystroke is the
+    /// person’s, and so is the decision to overwrite anything that has
+    /// appeared in those cells since the schedule was read.
+    /// `copyName` is false on the second press: the first one found the
+    /// clipboard impossible to put back and said so, and going ahead without
+    /// the copy is then the person’s own decision.
+    private func open(_ space: Space, _ query: Query, copyName: Bool) -> BookingOpenResult {
         guard let schedule = store.schedule,
               let url = store.source?.bookingLink(for: space, query: query, in: schedule)
-        else { return }
+        else { return .nothingToOpen }
 
+        // Nothing to offer when the name was never set: the overlay says so
+        // instead of promising a paste that would put an empty line in.
+        if copyName, let name = preferences.bookingName {
+            // A refusal stops here on purpose. The sheet is not opened and the
+            // overlay is not hidden: with four cells selected and the old
+            // clipboard still loaded, ⌘V would put it into the sheet, and the
+            // person would have no way of learning why.
+            guard clipboard.place(name, slots: query.slotCount, hold: preferences.clipboardHold) else {
+                return .clipboardUnavailable
+            }
+        }
         NSWorkspace.shared.open(url)
         hide()
+        return .opened
     }
 
     private func center(_ panel: NSPanel) {

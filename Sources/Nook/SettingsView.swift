@@ -126,6 +126,26 @@ struct SettingsView: View {
             }
 
             Section {
+                Picker(selection: Binding(
+                    get: { preferences.clipboardHoldSeconds },
+                    set: { preferences.setClipboardHoldSeconds($0) }
+                )) {
+                    ForEach(BookingClipboard.holdPresets, id: \.self) { seconds in
+                        holdLabel(seconds).tag(seconds)
+                    }
+                } label: {
+                    Text("Keep the name for")
+                }
+            } header: {
+                Text("Name on the clipboard")
+            } footer: {
+                Text("⏎ selects the booking’s cells in the sheet and copies your name, so one ⌘V fills the whole booking. Afterwards the clipboard goes back to what it held — unless you have copied something else meanwhile, which always wins. Nook cannot see a paste happen, so this is a wait, not a signal: set it too short and ⌘V puts the previous clipboard into the sheet. Raise it if the sheet is slow to open.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Section {
                 TextField("Your name in the sheet", text: $nameInput)
                     .textFieldStyle(.roundedBorder)
                     .focused($focused, equals: .bookingName)
@@ -158,7 +178,13 @@ struct SettingsView: View {
         .onChange(of: input) { _, _ in failed = false }
         // Saved as it is typed: there is nothing to validate, so a Save button
         // would only be a way to lose the name by closing the window.
-        .onChange(of: nameInput) { _, new in preferences.setBookingName(new) }
+        .onChange(of: nameInput) { _, new in
+            let safe = Preferences.replacingBookingSeparators(in: new)
+            if nameInput != safe {
+                nameInput = safe
+            }
+            preferences.setBookingName(safe)
+        }
         // The ⓘ in the overlay asks for this field by name.
         .onChange(of: focus.token) { _, _ in focused = focus.field }
     }
@@ -230,6 +256,20 @@ struct SettingsView: View {
     private static func timeOfDay(of date: Date) -> TimeOfDay {
         let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
         return TimeOfDay(hour: parts.hour ?? 0, minute: parts.minute ?? 0)
+    }
+
+    /// `15 seconds`, `20 minutes` — written by the system’s units formatter,
+    /// so the list needs no catalog key per value and reads right in every
+    /// language. `0` is the entry that is not a duration at all.
+    @ViewBuilder
+    private func holdLabel(_ seconds: Int) -> some View {
+        if seconds == 0 {
+            Text("Until something else is copied")
+        } else {
+            Text(verbatim: Duration.seconds(seconds).formatted(
+                .units(allowed: [.minutes, .seconds], width: .wide, zeroValueUnits: .hide)
+            ))
+        }
     }
 
     private func save() {

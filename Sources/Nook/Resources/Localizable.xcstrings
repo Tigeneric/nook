@@ -202,6 +202,29 @@
         }
       }
     },
+    "Can’t put your clipboard back afterwards, so the name wasn’t copied — ⏎ again to open %@ and pick the name there" : {
+      "comment" : "Shown in place of the ⏎ hint when the clipboard cannot be restored: nothing was copied and nothing opened, and the next ⏎ goes ahead without the copy",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не смогу потом вернуть ваш буфер обмена, поэтому имя не скопировано — ⏎ ещё раз, чтобы открыть %@ и выбрать имя там"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Не могу касније да вратим вашу оставу, па име није копирано — ⏎ поново да отворите %@ и изаберете име тамо"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ne mogu kasnije da vratim vašu ostavu, pa ime nije kopirano — ⏎ ponovo da otvorite %@ i izaberete ime tamo"
+          }
+        }
+      }
+    },
     "Checking against the sheet…" : {
       "comment" : "While the sheet is still loading, under the name field in settings",
       "localizations" : {
@@ -404,6 +427,29 @@
         }
       }
     },
+    "Keep the name for" : {
+      "comment" : "Settings picker label, followed by a duration",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Держать имя"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Задржи име"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zadrži ime"
+          }
+        }
+      }
+    },
     "Launch at login" : {
       "localizations" : {
         "ru" : {
@@ -466,6 +512,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Meni traka → „Podešavanja…“ → nalepite link ka tabeli rezervacija"
+          }
+        }
+      }
+    },
+    "Name on the clipboard" : {
+      "comment" : "Settings section header",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя в буфере обмена"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Име у клипборду"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ime u klipbordu"
           }
         }
       }
@@ -1317,6 +1386,29 @@
         }
       }
     },
+    "Until something else is copied" : {
+      "comment" : "Clipboard hold option: never put the previous clipboard back",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока не скопируют другое"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Док се не копира нешто друго"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dok se ne kopira nešto drugo"
+          }
+        }
+      }
+    },
     "With this set, the overlay opens on your own nearest bookings. A cell holds nothing but a name, so this is the only way to tell yours from everyone else’s. Write it as it stands in the sheet: case, accents and spaces are disregarded, so “AnaPetrovic” and “Ana Petrović” are one name — everything else has to match." : {
       "comment" : "Footer under the name field in settings",
       "localizations" : {
@@ -1588,6 +1680,29 @@
         }
       }
     },
+    "⏎ selects the booking’s cells in the sheet and copies your name, so one ⌘V fills the whole booking. Afterwards the clipboard goes back to what it held — unless you have copied something else meanwhile, which always wins. Nook cannot see a paste happen, so this is a wait, not a signal: set it too short and ⌘V puts the previous clipboard into the sheet. Raise it if the sheet is slow to open." : {
+      "comment" : "Footer of the clipboard section in settings",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ выделяет ячейки брони в таблице и копирует ваше имя — одно ⌘V заполняет её целиком. Потом буфер возвращается к тому, что в нём было, — кроме случая, когда вы успели скопировать что-то своё: оно всегда важнее. Вставку Nook увидеть не может, поэтому это ожидание, а не сигнал: слишком короткий срок — и ⌘V вложит в таблицу прежнее содержимое буфера. Если таблица открывается медленно, увеличьте."
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⏎ означава ћелије резервације у табели и копира ваше име, па једно ⌘V испуњава целу резервацију. Затим се клипборд враћа на претходни садржај — осим ако сте у међувремену копирали нешто своје, што увек има предност. Nook не може да види лепљење, па је ово чекање, а не сигнал: ако је сувише кратко, ⌘V ће у табелу ставити претходни садржај. Повећајте ако се табела отвара споро."
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "⏎ označava ćelije rezervacije u tabeli i kopira vaše ime, pa jedno ⌘V ispunjava celu rezervaciju. Zatim se klipbord vraća na prethodni sadržaj — osim ako ste u međuvremenu kopirali nešto svoje, što uvek ima prednost. Nook ne može da vidi lepljenje, pa je ovo čekanje, a ne signal: ako je suviše kratko, ⌘V će u tabelu staviti prethodni sadržaj. Povećajte ako se tabela otvara sporo."
+          }
+        }
+      }
+    },
     "⏎ — open %@ in the sheet" : {
       "localizations" : {
         "ru" : {
@@ -1606,6 +1721,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "⏎ — otvori %@ u tabeli"
+          }
+        }
+      }
+    },
+    "⏎ — open %@ in the sheet, name copied" : {
+      "comment" : "Hint under the answer: ⏎ selects the booking’s cells and copies the name, so one ⌘V fills them",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ — открыть %@ в таблице, имя скопировано"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ — отвори %@ у табели, име копирано"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⏎ — otvori %@ u tabeli, ime kopirano"
           }
         }
       }

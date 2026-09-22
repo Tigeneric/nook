@@ -70,6 +70,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    func applicationWillTerminate(_ notification: Notification) {
+        overlay.restoreClipboardBeforeTermination()
+    }
+
     /// `--show-overlay [query]` opens the panel right at launch: a hot key
     /// cannot be pressed from the command line, and both a person and an agent
     /// need to look at the overlay. `--show-settings` does the same for the

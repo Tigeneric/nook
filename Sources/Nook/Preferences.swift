@@ -19,6 +19,7 @@ final class Preferences {
         static let hotKeyOff = "hotKeyOff"
         static let hotKeyCode = "hotKeyCode"
         static let hotKeyModifiers = "hotKeyModifiers"
+        static let clipboardHoldSeconds = "clipboardHoldSeconds"
     }
 
     private let defaults: UserDefaults
@@ -26,11 +27,16 @@ final class Preferences {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         spreadsheetID = defaults.string(forKey: Key.spreadsheetID)
-        bookingName = defaults.string(forKey: Key.bookingName)
+        bookingName = Self.normalizedBookingName(defaults.string(forKey: Key.bookingName) ?? "")
         // 0 means “all floors”, which is also what an unset value looks like.
         let stored = defaults.integer(forKey: Key.floor)
         floor = stored == 0 ? nil : stored
         hotKey = Self.storedHotKey(in: defaults)
+        // “Never restore” is stored as 0, which is also what an unset value
+        // reads as — so the two are told apart by the key’s presence.
+        clipboardHoldSeconds = defaults.object(forKey: Key.clipboardHoldSeconds) == nil
+            ? BookingClipboard.defaultHoldSeconds
+            : defaults.integer(forKey: Key.clipboardHoldSeconds)
     }
 
     /// The combination that shows the overlay; `nil` means nobody set one —
@@ -60,6 +66,27 @@ final class Preferences {
             keyCode: UInt32(defaults.integer(forKey: Key.hotKeyCode)),
             modifiers: UInt32(defaults.integer(forKey: Key.hotKeyModifiers))
         )
+    }
+
+    /// How long the copied booking name stays on the clipboard, in seconds.
+    /// `0` means it is left there until something else is copied.
+    ///
+    /// Chosen from a list rather than typed: the value has to exceed however
+    /// long the sheet takes to open in a browser, and one that is too small
+    /// means ⌘V puts the previous clipboard into cells the whole coworking
+    /// shares. A list cannot express a value that is merely a slip of the
+    /// finger; whether the chosen one is long enough is still the person’s
+    /// call, and the slow end of the list is what a slow sheet is for.
+    private(set) var clipboardHoldSeconds: Int
+
+    func setClipboardHoldSeconds(_ seconds: Int) {
+        clipboardHoldSeconds = seconds
+        defaults.set(seconds, forKey: Key.clipboardHoldSeconds)
+    }
+
+    /// `nil` — do not put the previous clipboard back at all.
+    var clipboardHold: Duration? {
+        clipboardHoldSeconds > 0 ? .seconds(clipboardHoldSeconds) : nil
     }
 
     /// The floor a person restricted the search to. `nil` means all of them.
@@ -95,15 +122,27 @@ final class Preferences {
     private(set) var bookingName: String?
 
     /// Blank is stored as “not set”: a field cleared by hand means the same as
-    /// one never filled in.
+    /// one never filled in. Tabs and line breaks cannot be part of the value:
+    /// Sheets treats them as TSV separators and would paste outside the booking.
     func setBookingName(_ input: String) {
-        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
-        bookingName = trimmed.isEmpty ? nil : trimmed
+        bookingName = Self.normalizedBookingName(input)
         if let bookingName {
             defaults.set(bookingName, forKey: Key.bookingName)
         } else {
             defaults.removeObject(forKey: Key.bookingName)
         }
+    }
+
+    static func normalizedBookingName(_ input: String) -> String? {
+        let safe = replacingBookingSeparators(in: input)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return safe.isEmpty ? nil : safe
+    }
+
+    static func replacingBookingSeparators(in input: String) -> String {
+        input.map { character in
+            character == "\t" || character.isNewline ? " " : String(character)
+        }.joined()
     }
 
     /// `nil` until the sheet has been configured.
