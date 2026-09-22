@@ -897,6 +897,28 @@
         }
       }
     },
+    "Quit Nook" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выйти из Nook"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изађи из програма Nook"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izađi iz programa Nook"
+          }
+        }
+      }
+    },
     "Reading the sheet…" : {
       "localizations" : {
         "ru" : {

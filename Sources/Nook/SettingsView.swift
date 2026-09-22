@@ -165,7 +165,11 @@ struct SettingsView: View {
             HStack {
                 // The menu bar icon can be hidden by macOS, and with it the
                 // only other Quit: settings are reachable by reopening the app.
-                Button("Quit") { NSApp.terminate(nil) }
+                //
+                // Named rather than plain “Quit”, which next to the version
+                // string reads as a button of the form. This one acts on the
+                // application, and the label says which.
+                Button("Quit Nook") { NSApp.terminate(nil) }
                 Spacer()
                 Text(verbatim: Self.version)
                     .font(.caption2)
