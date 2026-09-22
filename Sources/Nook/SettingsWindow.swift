@@ -73,7 +73,7 @@ final class SettingsWindow {
     private func make() -> NSWindow {
         let window = EscapableWindow(
             contentRect: NSRect(origin: .zero, size: Self.minimumSize),
-            styleMask: [.titled, .closable, .resizable],
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )

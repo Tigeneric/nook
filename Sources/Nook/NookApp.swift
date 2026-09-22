@@ -5,8 +5,20 @@ import AppKit
 struct NookApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
+    init() {
+        // Where the menu bar icon goes, in points from the right edge of the
+        // screen. Unset, macOS puts a new icon leftmost, right by the notch,
+        // and on a full menu bar that is the one hidden under it. A registered
+        // default only fills the gap: once the icon is ⌘-dragged, macOS stores
+        // the person's position under the same key and that one wins.
+        // `Item-0` is the autosave name SwiftUI gives the MenuBarExtra's item.
+        UserDefaults.standard.register(defaults: [
+            "NSStatusItem Preferred Position Item-0": 100,
+        ])
+    }
+
     var body: some Scene {
-        MenuBarExtra("Nook", systemImage: "rectangle.grid.3x2") {
+        MenuBarExtra {
             // The combination is configurable, so the menu reads it rather
             // than spelling it out: a stale ⌥Space here would be a lie.
             if let combo = delegate.preferences.hotKey {
@@ -17,6 +29,8 @@ struct NookApp: App {
             Button("Settings…") { delegate.settings.show() }
             Divider()
             Button("Quit") { NSApp.terminate(nil) }
+        } label: {
+            Image(nsImage: MenuBarIcon.image)
         }
     }
 }
@@ -72,6 +86,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         overlay.restoreClipboardBeforeTermination()
+    }
+
+    /// Opening the app again - Spotlight, Finder, `open` - while it runs brings
+    /// up settings. The menu bar icon is not guaranteed to be seen: macOS hides
+    /// what does not fit, under the notch included, and there is no API to keep
+    /// it in. This is the way back in that does not depend on it.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        settings.show()
+        return false
     }
 
     /// `--show-overlay [query]` opens the panel right at launch: a hot key

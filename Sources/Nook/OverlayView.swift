@@ -123,13 +123,17 @@ struct OverlayView: View {
         }
         .padding(20)
         .frame(width: OverlayMetrics.width, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .background {
-            GeometryReader { geometry in
-                Color.clear.preference(key: OverlaySizeKey.self, value: geometry.size)
-            }
-        }
-        .onPreferenceChange(OverlaySizeKey.self, perform: onResize)
+        // The height is the content's own, not the window's: the size measured
+        // below is what the panel is resized to. Without this the view takes
+        // the window's height, reports it back, and on macOS before 26, where
+        // the window does not follow the preferred size by itself, it never
+        // grows past its first 160 points.
+        .fixedSize(horizontal: false, vertical: true)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: OverlayMetrics.cornerRadius))
+        // Measured with `onGeometryChange` rather than a preference read out
+        // of a background `GeometryReader`: on macOS 15 that preference never
+        // got past its default, and the panel stayed at 160 points.
+        .onGeometryChange(for: CGSize.self, of: \.size, action: onResize)
         // The field catches Esc too; this is for when focus has left it.
         .onExitCommand(perform: onClose)
         // The first character typed puts the arrows back to editing the
@@ -659,13 +663,5 @@ struct OverlayView: View {
             return Availability.fits(query, in: schedule).first { $0.id == requested.id }
         }
         return visibleFree.first
-    }
-}
-
-private struct OverlaySizeKey: PreferenceKey {
-    static let defaultValue = CGSize(width: OverlayMetrics.width, height: 160)
-
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-        value = nextValue()
     }
 }

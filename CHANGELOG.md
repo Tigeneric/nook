@@ -7,6 +7,31 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
+## Unreleased
+
+### Added
+
+- Opening Nook again while it runs - from Spotlight, Finder or `open` -
+  brings up settings: macOS hides menu bar icons that do not fit, under the
+  notch included, and this is the way in that does not depend on the icon.
+- A Quit button in settings, for the same reason.
+- The settings window can be minimised: the yellow button in its title bar.
+- On first launch the menu bar icon goes next to the clock. macOS puts a new
+  icon leftmost, right by the notch, and on a full menu bar that is the one
+  hidden under it. A position the person sets by ⌘-dragging still wins.
+- An app icon: a booth, the nook of the name. The source is `tools/AppIcon.svg`;
+  `make icon` renders it into the asset catalog.
+- The menu bar icon is the same booth, reduced to lines, in place of the
+  generic grid. Drawn in code, so a `swift run` build shows it too.
+
+### Fixed
+
+- On macOS 15 the overlay had square corners and never grew past 160 points,
+  cutting off its top and bottom lines. The corners are now clipped by the
+  window's layer, and the height is measured with `onGeometryChange`: the
+  preference read out of a background `GeometryReader` never got past its
+  default there.
+
 ## 0.1.1 — 2026-09-22
 
 ⏎ now selects the whole booking and hands you the name, so the manual step is

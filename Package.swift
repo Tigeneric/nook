@@ -32,7 +32,9 @@ let package = Package(
             name: "Nook",
             dependencies: ["NookCore", "NookSheet"],
             path: "Sources/Nook",
-            exclude: ["Info.plist"],
+            // The asset catalog holds only the app icon, which only the .app bundle
+            // built by Xcode has any use for.
+            exclude: ["Info.plist", "Assets.xcassets"],
             resources: [.process("Resources")]
         ),
 
