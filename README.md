@@ -81,10 +81,9 @@ The app lives in the menu bar and has no Dock icon. Turn on “Launch at login�
 in its settings, or you will have to start it by hand after every restart.
 
 On a Mac with a notch the menu bar hides icons that do not fit, and Nook’s can
-end up under the notch. Two things keep it in reach: opening Nook
-again (Spotlight, Finder) brings up settings, and on first launch Nook places
-its icon next to the clock rather than by the notch, so it is not the one
-pushed out. ⌘-drag it elsewhere and macOS remembers your choice.
+end up under the notch. Opening Nook again (Spotlight, Finder) brings up
+settings, so there is a way back in that does not depend on the icon. You can
+also ⌘-drag the icon closer to the clock, and macOS remembers your choice.
 
 The build is signed ad-hoc, which is all it takes to run and asks for no Apple
 account of any kind. Nothing you build here is quarantined, so Gatekeeper stays

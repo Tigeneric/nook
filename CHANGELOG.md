@@ -16,9 +16,6 @@ release is that edit plus a `git tag`.
   notch included, and this is the way in that does not depend on the icon.
 - A Quit button in settings, for the same reason.
 - The settings window can be minimised: the yellow button in its title bar.
-- On first launch the menu bar icon goes next to the clock. macOS puts a new
-  icon leftmost, right by the notch, and on a full menu bar that is the one
-  hidden under it. A position the person sets by ⌘-dragging still wins.
 - An app icon: a booth, the nook of the name. The source is `tools/AppIcon.svg`;
   `make icon` renders it into the asset catalog.
 - The menu bar icon is the same booth, reduced to lines, in place of the
