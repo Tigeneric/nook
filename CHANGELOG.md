@@ -7,6 +7,15 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
+## Unreleased
+
+### Added
+
+- Opening Nook again while it runs - from Spotlight, Finder or `open` -
+  brings up settings: macOS hides menu bar icons that do not fit, under the
+  notch included, and this is the way in that does not depend on the icon.
+- A Quit button in settings, for the same reason.
+
 ## 0.1.2 — 2026-09-22
 
 ### Changed

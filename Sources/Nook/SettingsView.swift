@@ -162,12 +162,17 @@ struct SettingsView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            Text(verbatim: Self.version)
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.trailing, 20)
-                .padding(.bottom, 8)
+            HStack {
+                // The menu bar icon can be hidden by macOS, and with it the
+                // only other Quit: settings are reachable by reopening the app.
+                Button("Quit") { NSApp.terminate(nil) }
+                Spacer()
+                Text(verbatim: Self.version)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 8)
         }
         .formStyle(.grouped)
         .frame(width: 460)
