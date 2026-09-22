@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Nook's app icon: a booth, the "nook" of the name. Source of the
+       AppIcon asset; `make icon` renders it into every size macOS asks for. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFBA63"/>
+      <stop offset="1" stop-color="#EE6B36"/>
+    </linearGradient>
+    <linearGradient id="inside" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6B3119"/>
+      <stop offset="1" stop-color="#8E4527"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFAF3"/>
+      <stop offset="1" stop-color="#FBE7D2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.33" r="0.55">
+      <stop offset="0" stop-color="#FFD58F" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFD58F" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)" filter="url(#shadow)"/>
+  <path d="M302 812 V440 a210 210 0 0 1 420 0 V812 Z" fill="url(#frame)"/>
+  <path d="M366 812 V448 a146 146 0 0 1 292 0 V812 Z" fill="url(#inside)"/>
+  <path d="M366 812 V448 a146 146 0 0 1 292 0 V812 Z" fill="url(#glow)"/>
+  <line x1="512" y1="302" x2="512" y2="430" stroke="#FFE2B5" stroke-width="8"/>
+  <path d="M470 452 a42 30 0 0 1 84 0 Z" fill="#FFC56E"/>
+  <rect x="404" y="612" width="216" height="40" rx="20" fill="#FFB35C"/>
+  <rect x="430" y="648" width="26" height="164" rx="10" fill="#F39A4A"/>
+  <rect x="568" y="648" width="26" height="164" rx="10" fill="#F39A4A"/>
+</svg>

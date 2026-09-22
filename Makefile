@@ -21,7 +21,7 @@ CONFIG  = Debug
 DERIVED = .build/xcode
 APP     = $(DERIVED)/Build/Products/$(CONFIG)/Nook.app
 
-.PHONY: build test test-xcode generate app install run clean
+.PHONY: build test test-xcode generate app install run clean icon
 
 build:
 	swift build
@@ -50,6 +50,10 @@ install: app
 
 run: install
 	open /Applications/Nook.app
+
+# Re-render the app icon's sizes after editing tools/AppIcon.svg.
+icon:
+	swift tools/render-icon.swift tools/AppIcon.svg Sources/Nook/Assets.xcassets/AppIcon.appiconset
 
 clean:
 	rm -rf $(DERIVED) $(PROJECT) .build
