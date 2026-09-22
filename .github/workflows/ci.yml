@@ -25,7 +25,7 @@ jobs:
     # runs `swift test` only: building the .app would require signing.
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Swift version
         run: swift --version
       - name: Tests
