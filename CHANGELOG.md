@@ -7,7 +7,12 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
-## Unreleased
+## 0.1.1 — 2026-09-22
+
+⏎ now selects the whole booking and hands you the name, so the manual step is
+one ⌘V instead of hunting for yourself in a dropdown. The app still writes
+nothing to the sheet — that is v0.2, and it needs a credential this version
+deliberately does without.
 
 ### Added
 

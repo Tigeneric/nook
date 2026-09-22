@@ -10,8 +10,8 @@ settings:
   base:
     # The single place the version is set. Info.plist only references these,
     # so a release means editing one line and tagging the commit.
-    MARKETING_VERSION: "0.1.0"        # what a person sees
-    CURRENT_PROJECT_VERSION: "1"      # build number, grows monotonically
+    MARKETING_VERSION: "0.1.1"        # what a person sees
+    CURRENT_PROJECT_VERSION: "2"      # build number, grows monotonically
     # Substituted from the environment at `xcodegen generate` time; the
     # Makefile provides a default. Another account or CI:
     # `DEVELOPMENT_TEAM=XXX make app`.
