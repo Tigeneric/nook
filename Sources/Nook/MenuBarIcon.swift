@@ -6,6 +6,11 @@ import AppKit
 /// Drawn in code rather than kept in the asset catalog: the catalog belongs to
 /// the Xcode build only, and a `swift run` would be left with a blank menu bar
 /// item. A template image, so macOS tints it for the menu bar's appearance.
+///
+/// On the main actor: before the macOS 26 SDK `NSImage` is not `Sendable`,
+/// and a static one is then an error in Swift 6. It is only ever read by the
+/// menu bar scene anyway.
+@MainActor
 enum MenuBarIcon {
     static let image: NSImage = {
         let side: CGFloat = 18
