@@ -27,6 +27,10 @@ enum OverlayMetrics {
     ///
     /// Going narrower means shortening the hints themselves, not the window.
     static let width: CGFloat = 460
+
+    /// The rounding of the panel. The view's material and the window's own
+    /// mask both take it, so the two cannot disagree.
+    static let cornerRadius: CGFloat = 14
 }
 
 /// The overlay window.
