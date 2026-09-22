@@ -161,22 +161,29 @@ struct SettingsView: View {
                 .fixedSize(horizontal: false, vertical: true)
             }
         }
+        // The form scrolls under this, so it needs a bar of its own to hide
+        // behind: an inset with no background lets the text of the section
+        // above run straight through the button and the version.
         .safeAreaInset(edge: .bottom) {
-            HStack {
-                // The menu bar icon can be hidden by macOS, and with it the
-                // only other Quit: settings are reachable by reopening the app.
-                //
-                // Named rather than plain “Quit”, which next to the version
-                // string reads as a button of the form. This one acts on the
-                // application, and the label says which.
-                Button("Quit Nook") { NSApp.terminate(nil) }
-                Spacer()
-                Text(verbatim: Self.version)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+            VStack(spacing: 0) {
+                Divider()
+                HStack {
+                    // The menu bar icon can be hidden by macOS, and with it the
+                    // only other Quit: settings are reachable by reopening the app.
+                    //
+                    // Named rather than plain “Quit”, which next to the version
+                    // string reads as a button of the form. This one acts on the
+                    // application, and the label says which.
+                    Button("Quit Nook") { NSApp.terminate(nil) }
+                    Spacer()
+                    Text(verbatim: Self.version)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 8)
+            .background(.bar)
         }
         .formStyle(.grouped)
         .frame(width: 460)

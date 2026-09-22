@@ -31,6 +31,12 @@ release is that edit plus a `git tag`.
   window's layer, and the height is measured with `onGeometryChange`: the
   preference read out of a background `GeometryReader` never got past its
   default there.
+- The bottom of the settings window no longer has the form running through
+  it. The strip holding the version had no background of its own, so the text
+  of the last section scrolled straight under the label — true since 0.1.1,
+  where a small tertiary line in the corner was simply hard to notice. It now
+  sits on a bar, separated as macOS separates a pinned strip from what
+  scrolls beneath it.
 
 ## 0.1.2 — 2026-09-22
 
