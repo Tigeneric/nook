@@ -7,7 +7,11 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
-## Unreleased
+## 0.1.3 — 2026-09-22
+
+The app can be found and closed even when macOS has hidden its menu bar
+icon, and it has a face of its own instead of a borrowed grid. On macOS 15
+the overlay stops being a clipped square.
 
 ### Added
 
