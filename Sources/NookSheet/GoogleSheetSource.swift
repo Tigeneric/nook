@@ -72,19 +72,19 @@ public struct GoogleSheetSource: ScheduleSource {
     /// nothing itself, so this link is the whole write path.
     public func bookingLink(
         for space: Space,
-        date: CalendarDate,
-        start: TimeOfDay,
+        query: Query,
         in schedule: Schedule
     ) -> URL? {
-        guard let dateIndex = schedule.dateIndex(of: date),
-              let slotIndex = SheetGrid.slotIndex(of: start)
+        guard let dateIndex = schedule.dateIndex(of: query.date),
+              let slotIndex = SheetGrid.slotIndex(of: query.start)
         else { return nil }
 
         return SheetAddress.deepLink(
             spreadsheetID: spreadsheetID,
             space: space,
             dateIndex: dateIndex,
-            slotIndex: slotIndex
+            slotIndex: slotIndex,
+            slots: query.slotCount
         )
     }
 

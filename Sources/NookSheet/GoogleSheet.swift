@@ -69,23 +69,40 @@ public enum SheetAddress {
         columnName(firstDateColumn + dateIndex)
     }
 
-    public static func a1(dateIndex: Int, slotIndex: Int) -> String {
-        "\(column(dateIndex: dateIndex))\(row(slotIndex: slotIndex))"
+    /// The address of a booking: one cell, or the span of slots it covers —
+    /// `B13` for a quarter of an hour, `B13:B16` for an hour.
+    ///
+    /// The span is what a person pastes into, so it must not run past the end
+    /// of the day: a booking that starts at 19:30 and lasts two hours is
+    /// clipped to the last row of the grid rather than addressing rows that
+    /// hold nothing.
+    public static func a1(dateIndex: Int, slotIndex: Int, slots: Int = 1) -> String {
+        let column = column(dateIndex: dateIndex)
+        let first = row(slotIndex: slotIndex)
+        let lastRow = row(slotIndex: SheetGrid.slotCount - 1)
+        let last = min(first + max(1, slots) - 1, lastRow)
+        guard last > first else { return "\(column)\(first)" }
+        return "\(column)\(first):\(column)\(last)"
     }
 
-    /// A link that opens the space tab with the caret on the cell.
+    /// A link that opens the space tab with the booking’s cells selected.
     ///
     /// The first version uses it instead of writing to the sheet. The URL
     /// fragment is handled by the client only, so no HTTP request can verify
     /// that it works — it is checked by opening it in a browser.
+    ///
+    /// The whole span is selected rather than its first cell: it shows the
+    /// person how long the booking they are about to make is, and one paste
+    /// then fills all of it.
     public static func deepLink(
         spreadsheetID: String,
         space: Space,
         dateIndex: Int,
-        slotIndex: Int
+        slotIndex: Int,
+        slots: Int = 1
     ) -> URL {
-        let cell = a1(dateIndex: dateIndex, slotIndex: slotIndex)
-        return URL(string: "https://docs.google.com/spreadsheets/d/\(spreadsheetID)/edit#gid=\(space.sourceKey)&range=\(cell)")!
+        let cells = a1(dateIndex: dateIndex, slotIndex: slotIndex, slots: slots)
+        return URL(string: "https://docs.google.com/spreadsheets/d/\(spreadsheetID)/edit#gid=\(space.sourceKey)&range=\(cells)")!
     }
 
     /// 0 → `A`, 25 → `Z`, 26 → `AA`.

@@ -15,12 +15,7 @@ private struct StoreTestSource: ScheduleSource {
         return try result.get()
     }
 
-    func bookingLink(
-        for space: Space,
-        date: CalendarDate,
-        start: TimeOfDay,
-        in schedule: Schedule
-    ) -> URL? {
+    func bookingLink(for space: Space, query: Query, in schedule: Schedule) -> URL? {
         nil
     }
 }

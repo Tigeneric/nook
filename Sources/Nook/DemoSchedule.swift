@@ -84,7 +84,7 @@ struct DemoSource: ScheduleSource {
     }
 
     /// There is nowhere to send anybody: the sheet behind this does not exist.
-    func bookingLink(for space: Space, date: CalendarDate, start: TimeOfDay, in schedule: Schedule) -> URL? {
+    func bookingLink(for space: Space, query: Query, in schedule: Schedule) -> URL? {
         nil
     }
 }

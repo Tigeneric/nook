@@ -13,7 +13,7 @@ private struct InMemorySource: ScheduleSource {
 
     func load(spaces: [Space]) async throws -> Schedule { schedule }
 
-    func bookingLink(for space: Space, date: CalendarDate, start: TimeOfDay, in schedule: Schedule) -> URL? {
+    func bookingLink(for space: Space, query: Query, in schedule: Schedule) -> URL? {
         link
     }
 }
@@ -48,9 +48,9 @@ struct ScheduleSourceTests {
     func sourceWithoutAWritePlace() throws {
         let source = InMemorySource(schedule: schedule(), link: nil)
         let c1 = try #require(Space.named("C1"))
+        let query = Query(date: date, start: TimeOfDay(hour: 14), minutes: 45)
 
-        #expect(source.bookingLink(for: c1, date: date, start: TimeOfDay(hour: 14),
-                                   in: source.schedule) == nil)
+        #expect(source.bookingLink(for: c1, query: query, in: source.schedule) == nil)
     }
 
     @Test("A link of any shape is fine — the core does not inspect it")
@@ -58,8 +58,8 @@ struct ScheduleSourceTests {
         let link = try #require(URL(string: "https://booking.example/room/C1?at=2026-09-18T14:00"))
         let source = InMemorySource(schedule: schedule(), link: link)
         let c1 = try #require(Space.named("C1"))
+        let query = Query(date: date, start: TimeOfDay(hour: 14), minutes: 45)
 
-        #expect(source.bookingLink(for: c1, date: date, start: TimeOfDay(hour: 14),
-                                   in: source.schedule) == link)
+        #expect(source.bookingLink(for: c1, query: query, in: source.schedule) == link)
     }
 }

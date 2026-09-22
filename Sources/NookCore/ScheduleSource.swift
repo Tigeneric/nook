@@ -18,7 +18,11 @@ public protocol ScheduleSource: Sendable {
     /// `nil` when the source has no such place — then the app simply offers
     /// nothing to open. The first version of Nook does not write anywhere
     /// itself, so this link is the whole of the write path.
-    func bookingLink(for space: Space, date: CalendarDate, start: TimeOfDay, in schedule: Schedule) -> URL?
+    ///
+    /// The whole request is passed rather than the start alone: the link
+    /// describes a booking, not a point in time, and a source that can address
+    /// a span — a spreadsheet can — needs the duration to do it.
+    func bookingLink(for space: Space, query: Query, in schedule: Schedule) -> URL?
 }
 
 public extension ScheduleSource {

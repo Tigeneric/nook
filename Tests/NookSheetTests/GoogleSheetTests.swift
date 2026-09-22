@@ -23,6 +23,24 @@ struct SheetAddressTests {
         #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last) == "B53")
     }
 
+    /// An hour is four rows, and the person pastes into all of them at once.
+    @Test("A booking longer than a slot addresses a range")
+    func spanOfSlots() throws {
+        let slot = try #require(SheetGrid.slotIndex(of: TimeOfDay(hour: 10)))
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: slot, slots: 1) == "B13")
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: slot, slots: 3) == "B13:B15")
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: slot, slots: 4) == "B13:B16")
+    }
+
+    /// A span that would run off the end of the day stops at the last row
+    /// rather than pointing at rows the grid does not have.
+    @Test("The range is clipped to the end of the day")
+    func spanClippedAtDayEnd() throws {
+        let last = try #require(SheetGrid.slotIndex(of: SheetGrid.dayEnd))
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last, slots: 4) == "B53")
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last - 1, slots: 8) == "B52:B53")
+    }
+
     @Test("The tenth date is column K")
     func lastDateColumn() {
         #expect(SheetAddress.column(dateIndex: 9) == "K")
@@ -42,6 +60,30 @@ struct SheetAddressTests {
         let url = SheetAddress.deepLink(spreadsheetID: "SHEET", space: c1, dateIndex: 0, slotIndex: 8)
         #expect(url.absoluteString ==
             "https://docs.google.com/spreadsheets/d/SHEET/edit#gid=1248761150&range=B13")
+    }
+
+    @Test("The link selects the whole booking, not its first cell")
+    func deepLinkSpan() throws {
+        let c1 = try #require(Space.named("C1"))
+        let url = SheetAddress.deepLink(spreadsheetID: "SHEET", space: c1,
+                                        dateIndex: 0, slotIndex: 8, slots: 4)
+        #expect(url.absoluteString ==
+            "https://docs.google.com/spreadsheets/d/SHEET/edit#gid=1248761150&range=B13:B16")
+    }
+
+    /// The duration reaches the address through the request, so a 45-minute
+    /// booking selects three rows without anybody counting slots by hand.
+    @Test("The source turns a request into a range")
+    func sourceAddressesTheRequest() throws {
+        let c1 = try #require(Space.named("C1"))
+        let date = CalendarDate(year: 2026, month: 9, day: 18)
+        let schedule = Schedule(spaces: [c1], dates: [date], slots: SheetGrid.slots,
+                                cells: [c1.id: [[String?](repeating: nil, count: SheetGrid.slotCount)]])
+        let source = GoogleSheetSource(spreadsheetID: "SHEET")
+        let query = Query(date: date, start: TimeOfDay(hour: 10), minutes: 45)
+
+        let url = try #require(source.bookingLink(for: c1, query: query, in: schedule))
+        #expect(url.absoluteString.hasSuffix("&range=B13:B15"))
     }
 
     @Test("The ID is pulled out of a link pasted from the browser", arguments: [

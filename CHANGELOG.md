@@ -7,6 +7,18 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
+## Unreleased
+
+### Changed
+
+- ⏎ opens the booking’s whole span of cells rather than its first one —
+  `B13:B16` for an hour — so how long the booking is can be seen before
+  anything is typed into it. `ScheduleSource.bookingLink` takes the request
+  instead of a start time: a link describes a booking, not a point in time,
+  and a source able to address a span needs the duration to do it. A span
+  running past 20:00 is clipped to the last row of the grid rather than
+  pointing at rows the sheet does not have.
+
 ## 0.1.0 — 2026-09-22
 
 The first version that does the job end to end, in text rather than on a grid.

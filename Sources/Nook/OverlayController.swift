@@ -96,16 +96,12 @@ final class OverlayController {
         center(panel)
     }
 
-    /// Opens the space tab with the caret on the right cell. The first version
-    /// does not write to the sheet — a person types the name in themselves.
+    /// Opens the space tab with the booking’s cells selected. The first
+    /// version does not write to the sheet — a person types the name in
+    /// themselves.
     private func open(_ space: Space, _ query: Query) {
         guard let schedule = store.schedule,
-              let url = store.source?.bookingLink(
-                  for: space,
-                  date: query.date,
-                  start: query.start,
-                  in: schedule
-              )
+              let url = store.source?.bookingLink(for: space, query: query, in: schedule)
         else { return }
 
         NSWorkspace.shared.open(url)
