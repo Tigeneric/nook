@@ -45,14 +45,50 @@ final class BookingClipboard {
     ]
 
     private let pasteboard: NSPasteboard
+    /// Who is in front at the moment a booking is opened. Injected so the
+    /// seeding of `sawSheetApp` is under test: it is the part that decides
+    /// whether leaving works at all.
+    private let frontmostBundleID: () -> String?
     private var saved: [NSPasteboardItem]?
     /// The change count our own write left behind. Anything else means
     /// somebody has copied since, and the snapshot must not go back on.
     private var stamp: Int?
     private var restore: Task<Void, Never>?
+    /// The application the sheet was opened in, and whether it has been to the
+    /// front yet. Leaving it is the end of the booking, and the earliest
+    /// moment the name is no longer wanted.
+    private var sheetApp: String?
+    private var sawSheetApp = false
+    private var watch: NSObjectProtocol?
 
-    init(pasteboard: NSPasteboard = .general) {
+    init(
+        pasteboard: NSPasteboard = .general,
+        frontmostBundleID: @escaping () -> String? = {
+            NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+        }
+    ) {
         self.pasteboard = pasteboard
+        self.frontmostBundleID = frontmostBundleID
+    }
+
+    /// What an application coming to the front means for the name.
+    ///
+    /// Pure, so the reasoning is under test while the notification plumbing
+    /// stays three lines. The order matters: the sheet’s own application comes
+    /// to the front **after** the name is copied, and reading that as leaving
+    /// would take the name away before ⌘V.
+    enum Activation: Equatable {
+        /// The sheet is now in front; from here on, leaving means something.
+        case arrivedAtSheet
+        /// The person has gone somewhere else — the booking is over.
+        case leftTheSheet
+        case irrelevant
+    }
+
+    static func activation(of bundleID: String?, sheetApp: String?, sawSheetApp: Bool) -> Activation {
+        guard let sheetApp else { return .irrelevant }
+        if bundleID == sheetApp { return .arrivedAtSheet }
+        return sawSheetApp ? .leftTheSheet : .irrelevant
     }
 
     /// One line per slot: Sheets reads a paste as TSV, so newlines spread the
@@ -73,13 +109,22 @@ final class BookingClipboard {
     /// `hold` is read per booking rather than held by this object, so a change
     /// in the settings window takes effect on the next ⏎ rather than on the
     /// next launch. `nil` leaves the name on the clipboard until something
-    /// else is copied.
+    /// else is copied, and then nothing is watched either: that setting is a
+    /// person asking for the name to stay.
+    ///
+    /// `openedIn` is the application the sheet is about to open in. Leaving it
+    /// puts the clipboard back at once, which is the earliest honest end of
+    /// the booking — otherwise the name sits there for the whole hold and
+    /// ⌘V in the next application pastes it. The hold still covers what this
+    /// cannot see: a switch to another tab, or a tab closed without leaving
+    /// the browser.
+    ///
     /// `false` — the clipboard was left exactly as it was and nothing was
     /// copied. **The result has to be acted on**: the overlay promises the
     /// copy before ⏎ is pressed, and a caller that ignored a refusal would
     /// send the person to a sheet with four cells selected and their old
     /// clipboard still loaded, ready for ⌘V to put it in.
-    func place(_ name: String, slots: Int, hold: Duration?) -> Bool {
+    func place(_ name: String, slots: Int, hold: Duration?, openedIn bundleID: String? = nil) -> Bool {
         // Our own write is not “what the person had”: without this, a second
         // booking would snapshot the first booking’s name as the thing to
         // give back.
@@ -88,6 +133,7 @@ final class BookingClipboard {
             saved = snapshot
         }
         restore?.cancel()
+        restore = nil
 
         let item = NSPasteboardItem()
         item.setString(Self.text(name, slots: slots), forType: .string)
@@ -104,17 +150,76 @@ final class BookingClipboard {
             }
             saved = nil
             stamp = nil
+            stopWatching()
             return false
         }
         stamp = pasteboard.changeCount
 
-        guard let hold else { return true }
+        guard let hold else {
+            stopWatching()
+            return true
+        }
         restore = Task { [weak self] in
             try? await Task.sleep(for: hold)
             guard !Task.isCancelled else { return }
             self?.restoreIfUntouched()
         }
+        startWatching(bundleID)
         return true
+    }
+
+    /// Both triggers end in `restoreIfUntouched`, so the guard against
+    /// overwriting a newer copy applies to either of them.
+    ///
+    /// **The sheet’s application may already be in front**, and usually is:
+    /// the overlay is a non-activating panel, so ⌥Space over a browser leaves
+    /// that browser frontmost, and opening a tab in an application that is
+    /// already frontmost posts no activation at all. Started at `false`, the
+    /// browser would never be marked as visited, every later switch would read
+    /// as `.irrelevant`, and leaving would never hand the clipboard back — in
+    /// precisely the commonest way of booking. So the flag is seeded from who
+    /// is in front right now, not assumed.
+    private func startWatching(_ bundleID: String?) {
+        sheetApp = bundleID
+        sawSheetApp = bundleID != nil && frontmostBundleID() == bundleID
+        guard bundleID != nil, watch == nil else { return }
+        watch = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] note in
+            // The identifier is taken out here, in the non-isolated closure:
+            // a `Notification` is not `Sendable` and cannot cross into the
+            // actor, while a `String?` can.
+            let bundleID = (note.userInfo?[NSWorkspace.applicationUserInfoKey]
+                as? NSRunningApplication)?.bundleIdentifier
+            MainActor.assumeIsolated {
+                self?.noteActivation(of: bundleID)
+            }
+        }
+    }
+
+    /// The state machine behind the notification, reachable without one so a
+    /// test can drive the whole path — seeding, transition and restore — and
+    /// not merely the decision in isolation.
+    func noteActivation(of bundleID: String?) {
+        switch Self.activation(of: bundleID, sheetApp: sheetApp, sawSheetApp: sawSheetApp) {
+        case .arrivedAtSheet:
+            sawSheetApp = true
+        case .leftTheSheet:
+            restoreIfUntouched()
+        case .irrelevant:
+            break
+        }
+    }
+
+    private func stopWatching() {
+        if let watch {
+            NSWorkspace.shared.notificationCenter.removeObserver(watch)
+        }
+        watch = nil
+        sheetApp = nil
+        sawSheetApp = false
     }
 
     /// Puts the snapshot back — unless somebody copied after us, in which case
@@ -131,6 +236,7 @@ final class BookingClipboard {
         saved = nil
         stamp = nil
         restore = nil
+        stopWatching()
 
         guard let mine, mine == pasteboard.changeCount, let previous else { return }
         pasteboard.clearContents()

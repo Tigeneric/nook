@@ -138,7 +138,12 @@ final class OverlayController {
             // overlay is not hidden: with four cells selected and the old
             // clipboard still loaded, ⌘V would put it into the sheet, and the
             // person would have no way of learning why.
-            guard clipboard.place(name, slots: query.slotCount, hold: preferences.clipboardHold) else {
+            // Which application the link will open in is known before opening
+            // it, and leaving that application is the end of the booking.
+            let browser = NSWorkspace.shared.urlForApplication(toOpen: url)
+                .flatMap { Bundle(url: $0)?.bundleIdentifier }
+            guard clipboard.place(name, slots: query.slotCount,
+                                  hold: preferences.clipboardHold, openedIn: browser) else {
                 return .clipboardUnavailable
             }
         }

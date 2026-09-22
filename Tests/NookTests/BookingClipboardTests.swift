@@ -212,6 +212,95 @@ struct BookingClipboardTests {
         #expect(board.string(forType: .string) == "Ana Petrović")
     }
 
+    @Test("Switching to never restore disarms a pending restoration")
+    func switchingToNeverRestoreDisarmsThePendingRestoration() {
+        let board = pasteboard("timer-to-no-hold")
+        board.setString("something of their own", forType: .string)
+        let clipboard = BookingClipboard(pasteboard: board, frontmostBundleID: { Self.safari })
+        #expect(clipboard.place("Ana Petrović", slots: 1, hold: .seconds(60), openedIn: Self.safari))
+
+        #expect(clipboard.place("Miloš Jovanović", slots: 1, hold: nil, openedIn: Self.safari))
+        clipboard.noteActivation(of: "com.apple.dt.Xcode")
+        clipboard.restoreBeforeTermination()
+
+        #expect(board.string(forType: .string) == "Miloš Jovanović")
+    }
+
+    /// Leaving the application the sheet opened in is the end of the booking —
+    /// the earliest honest moment to hand the clipboard back, and the one that
+    /// keeps the name out of the next application’s ⌘V.
+    ///
+    /// The order is what makes this delicate: the browser comes to the front
+    /// **after** the name is copied, so its own arrival must not be read as
+    /// leaving — that would take the name away before it could be pasted.
+    @Test("An activation means nothing until the sheet has been to the front")
+    func readsActivations() {
+        let safari = Self.safari
+        // The browser arriving is not leaving, however it is read.
+        #expect(BookingClipboard.activation(of: safari, sheetApp: safari, sawSheetApp: false)
+            == .arrivedAtSheet)
+        #expect(BookingClipboard.activation(of: safari, sheetApp: safari, sawSheetApp: true)
+            == .arrivedAtSheet)
+        // Something else before the browser ever showed up: the link may still
+        // be opening, and the name has to survive until it does.
+        #expect(BookingClipboard.activation(of: "com.apple.dt.Xcode", sheetApp: safari, sawSheetApp: false)
+            == .irrelevant)
+        // The same switch once the sheet has been in front — that is leaving.
+        #expect(BookingClipboard.activation(of: "com.apple.dt.Xcode", sheetApp: safari, sawSheetApp: true)
+            == .leftTheSheet)
+        // An unidentifiable application counts as leaving all the same.
+        #expect(BookingClipboard.activation(of: nil, sheetApp: safari, sawSheetApp: true)
+            == .leftTheSheet)
+        // Nothing was opened, so there is nothing to leave.
+        #expect(BookingClipboard.activation(of: safari, sheetApp: nil, sawSheetApp: true)
+            == .irrelevant)
+    }
+
+    /// The regression that mattered: the overlay is a non-activating panel, so
+    /// ⌥Space over a browser leaves that browser frontmost, and opening a tab
+    /// in an already-frontmost application posts no activation. Seeded at
+    /// `false`, the browser would never count as visited and leaving would
+    /// never hand the clipboard back — in the commonest way of booking there
+    /// is.
+    @Test("Leaving works when the sheet’s application was already in front")
+    func restoresWhenTheBrowserWasAlreadyFrontmost() {
+        let board = pasteboard("already-front")
+        board.setString("something of their own", forType: .string)
+
+        let clipboard = BookingClipboard(pasteboard: board, frontmostBundleID: { Self.safari })
+        #expect(clipboard.place("Ana Petrović", slots: 1, hold: .seconds(60), openedIn: Self.safari))
+        #expect(board.string(forType: .string) == "Ana Petrović")
+
+        clipboard.noteActivation(of: "com.apple.dt.Xcode")
+        #expect(board.string(forType: .string) == "something of their own")
+    }
+
+    /// And the other way round: booking from some other application, the
+    /// browser has to arrive before leaving it can mean anything — otherwise
+    /// its own arrival would take the name away before ⌘V.
+    @Test("Leaving counts only after the sheet’s application has arrived")
+    func waitsForTheBrowserWhenBookingElsewhere() {
+        let board = pasteboard("arrives-later")
+        board.setString("something of their own", forType: .string)
+
+        let clipboard = BookingClipboard(pasteboard: board,
+                                         frontmostBundleID: { "com.apple.dt.Xcode" })
+        #expect(clipboard.place("Ana Petrović", slots: 1, hold: .seconds(60), openedIn: Self.safari))
+
+        // Some other application in the meantime: the link may still be
+        // opening, so the name must survive.
+        clipboard.noteActivation(of: "com.apple.finder")
+        #expect(board.string(forType: .string) == "Ana Petrović")
+
+        clipboard.noteActivation(of: Self.safari)
+        #expect(board.string(forType: .string) == "Ana Petrović")
+
+        clipboard.noteActivation(of: "com.apple.dt.Xcode")
+        #expect(board.string(forType: .string) == "something of their own")
+    }
+
+    private static let safari = "com.apple.Safari"
+
     /// Every value the settings window offers is either a duration or the
     /// “until something else is copied” entry — and 15 seconds, the default,
     /// has to be among them or the list would open on nothing.

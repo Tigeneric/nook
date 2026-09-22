@@ -7,6 +7,22 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
+## 0.1.2 — 2026-09-22
+
+### Changed
+
+- The clipboard comes back the moment you leave the application the sheet
+  opened in, not only when the hold runs out. Found in use: with the hold
+  alone the name sat there for its whole term, and the next ⌘V — in an editor,
+  a terminal — pasted the name into that instead. Leaving the browser is the
+  earliest honest end of a booking, and 0.1.1 could not see it.
+- The hold stays for the endings that leaving cannot see: a switch to another
+  tab, a tab closed without leaving the browser, a booking abandoned in place.
+  Whichever comes first hands the clipboard back, and neither overwrites
+  anything copied since. With the hold set to “until something else is copied”
+  nothing is watched at all — that setting is a person asking for the name to
+  stay.
+
 ## 0.1.1 — 2026-09-22
 
 ⏎ now selects the whole booking and hands you the name, so the manual step is
