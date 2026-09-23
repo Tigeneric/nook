@@ -7,7 +7,11 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
-## Unreleased
+## 0.1.4 — 2026-09-23
+
+Names now agree with the sheet: a booking cell validates against its roster
+literally, while Nook matches names folded, so a paste could be refused over a
+single space. The hint in the empty field stops offering a time that has gone.
 
 ### Changed
 
