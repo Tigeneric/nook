@@ -154,8 +154,9 @@ struct OverlayView: View {
     // MARK: - Hint for the next part of the request
 
     /// Where the search for free windows starts for a half-written request, and
-    /// what it accepts. One place on purpose: everything that offers a window
-    /// has to name the same one.
+    /// what it accepts. One place on purpose: the ghost and the first row of the
+    /// list have to name the same window, and they would drift apart the moment
+    /// this was spelled out twice and edited once.
     ///
     /// `after` is `nil` for a named day — a day somebody typed is not «today»,
     /// so it is counted from its beginning rather than from the current hour.
@@ -177,8 +178,6 @@ struct OverlayView: View {
               let space = schedule.spaces.first(where: { $0.id == spaceID })
         else { return nil }
 
-        // A day the sheet does not hold gets no ghost: there is no point
-        // completing a time into a day that does not exist.
         if draft.hasDay {
             guard let requestedDate = draft.date,
                   schedule.dateIndex(of: requestedDate) != nil
@@ -195,8 +194,6 @@ struct OverlayView: View {
             minMinutes: search.minMinutes
         ) else { return nil }
 
-        // The day was named and it is full: the answer lies on another date,
-        // and silently completing into it would answer a question nobody asked.
         if draft.hasDay, let requestedDate = draft.date, window.date != requestedDate {
             return nil
         }
@@ -271,6 +268,8 @@ struct OverlayView: View {
         case .loaded(let schedule):
             if let query {
                 result(query, schedule)
+            } else if let (space, draft) = requestedSpaceWithoutTime(in: schedule) {
+                freeWindowsBlock(schedule: schedule, space: space, draft: draft)
             } else {
                 // The rule is separated from the answer by a line, the way the
                 // query line is: what the sheet says and what the keyboard can
@@ -292,6 +291,126 @@ struct OverlayView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Free windows of a named space
+
+    private func requestedSpaceWithoutTime(in schedule: Schedule) -> (Space, QueryEdit.Draft)? {
+        let draft = QueryEdit.draft(text, today: today)
+        guard draft.hasSpace, !draft.hasTime,
+              let spaceID = draft.spaceID,
+              let space = schedule.spaces.first(where: { $0.id == spaceID })
+        else { return nil }
+        return (space, draft)
+    }
+
+    @ViewBuilder
+    private func freeWindowsBlock(schedule: Schedule, space: Space, draft: QueryEdit.Draft) -> some View {
+        let isDateMissing = draft.hasDay && (draft.date.flatMap { schedule.dateIndex(of: $0) } == nil)
+        VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 5) {
+                if let minutes = draft.durationMinutes {
+                    hint(Text("Free windows from \(QueryParser.durationText(minutes: minutes))"))
+                } else {
+                    hint(Text("Free windows"))
+                }
+                if isDateMissing {
+                    missingDate(schedule)
+                } else {
+                    freeWindowsList(schedule: schedule, space: space, draft: draft)
+                }
+            }
+            Divider()
+            let canComplete = !isDateMissing && windowStart(for: text) != nil
+            hint(canComplete ? Text("⇥ — complete the time · ↑↓ — room") : Text("↑↓ — room"))
+        }
+    }
+
+    /// Three rows: the days with nothing free and the windows share one
+    /// ceiling. Deliberately fewer than the panel could hold — the block sits
+    /// under a heading and over the line of keys, and a list that grows with
+    /// the number of free windows makes the overlay jump in height between two
+    /// keystrokes.
+    private static let windowRowLimit = 3
+
+    @ViewBuilder
+    private func freeWindowsList(schedule: Schedule, space: Space, draft: QueryEdit.Draft) -> some View {
+        let search = windowSearch(for: draft)
+        let answer = Availability.windowAnswer(
+            space: space,
+            in: schedule,
+            from: search.date,
+            after: search.after,
+            minMinutes: search.minMinutes,
+            withinDay: draft.hasDay,
+            rowLimit: Self.windowRowLimit
+        )
+
+        if answer.rows.isEmpty {
+            // Nothing to walk from today onwards: the sheet's period has run
+            // out. That is the same statement a named day out of the period
+            // gets, and it is the true one — «no free window today» would put
+            // the blame on the bookings.
+            missingDate(schedule)
+        } else {
+            VStack(alignment: .leading, spacing: 1) {
+                ForEach(answer.rows.indices, id: \.self) { index in
+                    switch answer.rows[index] {
+                    case .window(let window):
+                        freeWindowRow(window)
+                    case .unavailable(let date):
+                        unavailableWindowRow(date: date)
+                    }
+                }
+                // Everything the ceiling cut off is counted, without exception:
+                // a list that hides rows and says nothing reads as the whole
+                // answer. The windows are all of one day, so there is no second
+                // day for the count to have an opinion about.
+                if answer.more > 0 {
+                    hint(Text("\(String(answer.more)) more"))
+                        .padding(.top, 4)
+                }
+            }
+        }
+    }
+
+    private func unavailableWindowRow(date: CalendarDate) -> some View {
+        HStack(spacing: 11) {
+            Text("No free window")
+                .foregroundStyle(.secondary)
+            Spacer(minLength: 8)
+            if date == today {
+                Text("today").foregroundStyle(.tertiary)
+            } else {
+                // The same column as a window row's, and drawn the same way:
+                // the two kinds of row are read together.
+                Text(verbatim: "\(weekday(of: date)) \(dayAndMonth(date))")
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .font(.caption)
+        .padding(.vertical, 2)
+    }
+
+    private func freeWindowRow(_ window: Availability.FreeRun) -> some View {
+        let isToday = window.date == today
+        return HStack(spacing: 11) {
+            Text(verbatim: "\(window.start)–\(window.end)")
+                .monospacedDigit()
+                .foregroundStyle(isToday ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+            Text(verbatim: formatWindowDuration(minutes: window.minutes))
+                .foregroundStyle(isToday ? AnyShapeStyle(.secondary) : AnyShapeStyle(.tertiary))
+            Spacer(minLength: 8)
+            whenLabel(date: window.date, start: window.start, isOpenNow: window.isOpenNow)
+                .font(.caption)
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func formatWindowDuration(minutes: Int) -> String {
+        Duration.seconds(minutes * 60).formatted(
+            .units(allowed: [.hours, .minutes], width: .abbreviated)
+        )
     }
 
     // MARK: - My own bookings
@@ -444,19 +563,24 @@ struct OverlayView: View {
     /// red, tried first, read as an error. The same argument settled the window
     /// notches, which differ in thickness rather than in colour.
     @ViewBuilder
-    private func whenLabel(_ booking: Booking, selected: Bool = false) -> some View {
+    private func whenLabel(date: CalendarDate, start: TimeOfDay, isOpenNow: Bool = false, selected: Bool = false) -> some View {
         let quiet: AnyShapeStyle = selected ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary)
-        if booking.date != today {
-            Text(verbatim: "\(weekday(of: booking.date)) \(dayAndMonth(booking.date))")
+        if date != today {
+            Text(verbatim: "\(weekday(of: date)) \(dayAndMonth(date))")
                 .foregroundStyle(quiet)
-        } else if booking.start <= now {
+        } else if isOpenNow || start <= now {
             Text("now").foregroundStyle(.primary)
-        } else if booking.start.minutes - now.minutes < 60 {
-            Text("in \(String(booking.start.minutes - now.minutes)) min")
+        } else if start.minutes - now.minutes < 60 {
+            Text("in \(String(start.minutes - now.minutes)) min")
                 .foregroundStyle(.primary)
         } else {
             Text("today").foregroundStyle(quiet)
         }
+    }
+
+    @ViewBuilder
+    private func whenLabel(_ booking: Booking, selected: Bool = false) -> some View {
+        whenLabel(date: booking.date, start: booking.start, selected: selected)
     }
 
     /// `21/09` — the year is noise next to a date days away, and it is the

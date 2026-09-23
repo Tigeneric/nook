@@ -33,6 +33,13 @@ with what is free instead on the line below.
 <img src="docs/screenshots/named-space.png" width="560"
      alt="A query naming C3: C3 is taken by Jelena Marković, and C2, C4, MR1 are free at that hour.">
 
+Leave the time out and the question turns around: not “is C3 free at two” but
+when C3 is free at all. The answer is that space's own free windows — interval,
+length, when — three rows of them at most, with the rest counted. A day with
+nothing free takes a row of its own, so a window offered on Thursday arrives
+with the reason it is not sooner. ⇥ enters the start of the first one, and the
+answer for a time takes over from there.
+
 The pictures are taken against made-up data, which is what `--demo` is for:
 
 ```bash

@@ -415,6 +415,130 @@ struct AvailabilityTests {
     }
 }
 
+/// Three rows, and the days with nothing free take rows of their own.
+///
+/// The defect these exist for: a day booked solid used to drop out of the
+/// answer without trace. With two such days in a row the window found on the
+/// third was thrown away as well, while the ghost in the query line went on
+/// offering its time — the list withheld exactly what ⇥ would have entered.
+@Suite("The answer to “when is this space free”")
+struct WindowAnswerTests {
+    private let day1 = CalendarDate(year: 2026, month: 9, day: 18)
+    private let day2 = CalendarDate(year: 2026, month: 9, day: 21)
+    private let day3 = CalendarDate(year: 2026, month: 9, day: 22)
+    private let day4 = CalendarDate(year: 2026, month: 9, day: 23)
+    private let solid = Dictionary(uniqueKeysWithValues: (0..<SheetGrid.slotCount).map { ($0, "User") })
+
+    private func answer(
+        _ schedule: Schedule,
+        from date: CalendarDate,
+        after now: TimeOfDay? = nil,
+        minMinutes: Int = 0,
+        withinDay: Bool = false
+    ) throws -> Availability.WindowAnswer {
+        let mr1 = try #require(Space.named("MR1"))
+        return Availability.windowAnswer(
+            space: mr1,
+            in: schedule,
+            from: date,
+            after: now,
+            minMinutes: minMinutes,
+            withinDay: withinDay,
+            rowLimit: 3
+        )
+    }
+
+    @Test("A booked day is a row of its own, and the windows found still fit")
+    func bookedDayKeepsTheWindow() throws {
+        // Two solid days and a third with a window: the row the ghost offers is
+        // in the answer, and the days in between say why it is not sooner.
+        let s = multiDaySchedule(
+            dates: [day1, day2, day3],
+            occupied: ["MR1": [solid, solid, [:]]]
+        )
+        let result = try answer(s, from: day1)
+        #expect(result.rows == [
+            .unavailable(day1),
+            .unavailable(day2),
+            .window(Availability.FreeRun(date: day3, start: SheetGrid.dayStart, end: SheetGrid.dayEnd)),
+        ])
+        #expect(result.more == 0)
+    }
+
+    @Test("Explanation and windows share the ceiling")
+    func oneCeilingForBothKinds() throws {
+        // Today booked, the next day cut into four windows: one row of
+        // explanation leaves room for two of them, and the rest are counted.
+        var cut: [Int: String] = [:]
+        for slot in [4, 12, 20] { cut[slot] = "User" }
+        let s = multiDaySchedule(dates: [day1, day2], occupied: ["MR1": [solid, cut]])
+
+        let result = try answer(s, from: day1)
+        #expect(result.rows.count == 3)
+        #expect(result.rows[0] == .unavailable(day1))
+        #expect(result.rows[1] == .window(
+            Availability.FreeRun(date: day2, start: SheetGrid.dayStart, end: TimeOfDay(hour: 9))
+        ))
+        #expect(result.rows[2] == .window(
+            Availability.FreeRun(date: day2, start: TimeOfDay(hour: 9, minute: 15), end: TimeOfDay(hour: 11))
+        ))
+        #expect(result.more == 2)
+    }
+
+    @Test("Four days booked solid end at the ceiling, not at the fourth day")
+    func ceilingStopsTheWalk() throws {
+        let s = multiDaySchedule(
+            dates: [day1, day2, day3, day4],
+            occupied: ["MR1": [solid, solid, solid, solid]]
+        )
+        let result = try answer(s, from: day1)
+        #expect(result.rows == [.unavailable(day1), .unavailable(day2), .unavailable(day3)])
+        #expect(result.more == 0)
+    }
+
+    @Test("A named day is answered by that day alone")
+    func withinTheDayNamed() throws {
+        let s = multiDaySchedule(dates: [day1, day2], occupied: ["MR1": [solid, [:]]])
+        let result = try answer(s, from: day1, withinDay: true)
+        #expect(result.rows == [.unavailable(day1)])
+    }
+
+    @Test("Past the sheet’s period there are no rows at all")
+    func outsideTheSheetHasNoRows() throws {
+        let s = multiDaySchedule(dates: [day1], occupied: [:])
+        // “Not in the sheet” is the answer here, and it is the caller’s to
+        // make: an `unavailable` row would blame the bookings for a date the
+        // sheet does not hold.
+        #expect(try answer(s, from: day2).rows.isEmpty)
+        #expect(try answer(s, from: day2, withinDay: true).rows.isEmpty)
+        #expect(try answer(s, from: day1, withinDay: true).rows.count == 1)
+    }
+
+    @Test("An evening out of grid is a day with nothing, not a day skipped")
+    func eveningIsUnavailableToday() throws {
+        let s = multiDaySchedule(dates: [day1, day2], occupied: [:])
+        let result = try answer(s, from: day1, after: TimeOfDay(hour: 19, minute: 50))
+        #expect(result.rows == [
+            .unavailable(day1),
+            .window(Availability.FreeRun(date: day2, start: SheetGrid.dayStart, end: SheetGrid.dayEnd)),
+        ])
+    }
+
+    @Test("A day whose windows are all too short is a day with nothing")
+    func shortWindowsAreNothing() throws {
+        // Half-hour gaps only, against a request for 45 minutes.
+        var gaps: [Int: String] = [:]
+        for slot in 0..<SheetGrid.slotCount where !(slot % 4 == 0 || slot % 4 == 1) { gaps[slot] = "User" }
+        let s = multiDaySchedule(dates: [day1, day2], occupied: ["MR1": [gaps, [:]]])
+
+        let result = try answer(s, from: day1, minMinutes: 45)
+        #expect(result.rows.first == .unavailable(day1))
+        #expect(result.rows.last == .window(
+            Availability.FreeRun(date: day2, start: SheetGrid.dayStart, end: SheetGrid.dayEnd)
+        ))
+    }
+}
+
 @Suite("The space catalogue")
 struct SpaceCatalogTests {
 

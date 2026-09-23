@@ -69,6 +69,29 @@
         }
       }
     },
+    "%@ more" : {
+      "comment" : "Remainder of free windows beyond the cap",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ещё %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "још %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "još %@"
+          }
+        }
+      }
+    },
     "%@ twice to try again" : {
       "comment" : "The hot key: showing the overlay again re-reads the sheet",
       "localizations" : {
@@ -404,6 +427,52 @@
         }
       }
     },
+    "Free windows" : {
+      "comment" : "Heading above the list of free windows of a space in the overlay",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свободные окна"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слободни термини"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slobodni termini"
+          }
+        }
+      }
+    },
+    "Free windows from %@" : {
+      "comment" : "Heading above the list of free windows filtered by duration",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свободные окна от %@"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слободни термини од %@"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slobodni termini od %@"
+          }
+        }
+      }
+    },
     "Free:" : {
       "comment" : "Start of the line listing free spaces",
       "localizations" : {
@@ -557,6 +626,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mrežna greška %@"
+          }
+        }
+      }
+    },
+    "No free window" : {
+      "comment" : "Shown beside a date on which a space has no free window",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет свободного окна"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нема слободног термина"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nema slobodnog termina"
           }
         }
       }
@@ -1653,6 +1745,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "prozor %@, rezervacija tik pre"
+          }
+        }
+      }
+    },
+    "⇥ — complete the time · ↑↓ — room" : {
+      "comment" : "Hint under the free windows list in the overlay",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — дописать время · ↑↓ — комната"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — допиши време · ↑↓ — соба"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇥ — dopiši vreme · ↑↓ — soba"
+          }
+        }
+      }
+    },
+    "↑↓ — room" : {
+      "comment" : "Hint under the free windows list when completion is unavailable",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↑↓ — комната"
+          }
+        },
+        "sr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↑↓ — соба"
+          }
+        },
+        "sr-Latn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↑↓ — soba"
           }
         }
       }
