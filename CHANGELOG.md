@@ -7,6 +7,40 @@ the point of the app, is not built yet.
 The version is set in one place, `project.yml` (`MARKETING_VERSION`), and a
 release is that edit plus a `git tag`.
 
+## 0.1.5 — 2026-09-23
+
+Naming a space without a time used to be a dead end; now it is a question, and
+the answer is the windows that space has free. The day ends at 20:00 for real —
+until now "free all day" claimed a quarter of an hour the day does not have.
+
+### Added
+
+- A named space with no time given lists its free windows: interval, length and
+  when, three rows at most with the remainder counted. ⇥ completes the start of
+  the first one, so `MR1` becomes `MR1 8:15 45m` in two keystrokes and the
+  existing answer takes over. A day with nothing free takes a row of its own —
+  the evening past 19:45, a day booked solid — so the window offered on a later
+  date comes with the reason it is not sooner, and is not withheld while ⇥ goes
+  on offering it. Both kinds of row share the ceiling: a booked today and a
+  following day of five windows come out as one row of explanation and two
+  windows. The answer stops at the first day that has something, and a date the
+  sheet does not hold is told apart from a day that holds nothing free. ⏎ stays
+  inert here on purpose: no time was named, so nothing was chosen.
+- ↑↓ cycle the catalogue when a space is named and no time is, which is the one
+  state where the arrows had nothing to edit.
+
+### Fixed
+
+- The day ends at 20:00, not 20:15. A room tab carries 49 time labels and all
+  49 were read as slots, so the last began at 20:00 and the right edge of a
+  window came out a quarter of an hour past the end of the day — every "free
+  all day" said `8:00–20:15`, while `dayEnd`, the specification and the
+  interface all promise 20:00. The label is now the boundary it always was, the
+  slot count is derived from the bounds so the two cannot drift apart again,
+  and ↑ tops out at 19:45. A name typed into the sheet's row 53 is invisible to
+  Nook as a result, and a request for 20:00 is refused as outside the grid
+  rather than called free.
+
 ## 0.1.4 — 2026-09-23
 
 Names now agree with the sheet: a booking cell validates against its roster
