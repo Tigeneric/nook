@@ -14,13 +14,17 @@ struct SheetAddressTests {
         #expect(SheetAddress.a1(dateIndex: 0, slotIndex: slot) == "B13")
     }
 
+    /// Row 53 of the tab holds the 20:00 label and is not a slot, so the last
+    /// addressable row is 52 — see `SheetGrid`.
     @Test("First and last slot of the day")
     func dayEdges() throws {
         let first = try #require(SheetGrid.slotIndex(of: SheetGrid.dayStart))
-        let last = try #require(SheetGrid.slotIndex(of: SheetGrid.dayEnd))
         #expect(SheetAddress.a1(dateIndex: 0, slotIndex: first) == "B5")
-        #expect(last == SheetGrid.slotCount - 1)
-        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last) == "B53")
+
+        let last = SheetGrid.slotCount - 1
+        #expect(SheetGrid.slots[last] == TimeOfDay(hour: 19, minute: 45))
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last) == "B52")
+        #expect(SheetGrid.slotIndex(of: SheetGrid.dayEnd) == nil)
     }
 
     /// An hour is four rows, and the person pastes into all of them at once.
@@ -35,10 +39,10 @@ struct SheetAddressTests {
     /// A span that would run off the end of the day stops at the last row
     /// rather than pointing at rows the grid does not have.
     @Test("The range is clipped to the end of the day")
-    func spanClippedAtDayEnd() throws {
-        let last = try #require(SheetGrid.slotIndex(of: SheetGrid.dayEnd))
-        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last, slots: 4) == "B53")
-        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last - 1, slots: 8) == "B52:B53")
+    func spanClippedAtDayEnd() {
+        let last = SheetGrid.slotCount - 1
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last, slots: 4) == "B52")
+        #expect(SheetAddress.a1(dateIndex: 0, slotIndex: last - 1, slots: 8) == "B51:B52")
     }
 
     @Test("The tenth date is column K")
@@ -110,12 +114,16 @@ struct SheetAddressTests {
         #expect(SheetGrid.slotIndex(of: TimeOfDay(hour: 10, minute: 7)) == nil)
         #expect(SheetGrid.slotIndex(of: TimeOfDay(hour: 7, minute: 45)) == nil)
         #expect(SheetGrid.slotIndex(of: TimeOfDay(hour: 20, minute: 15)) == nil)
+        // 20:00 is where the day ends, not a slot to start a booking in.
+        #expect(SheetGrid.slotIndex(of: TimeOfDay(hour: 20)) == nil)
     }
 
-    @Test("The grid is 49 slots from 8:00 to 20:00")
+    @Test("The grid is 48 slots tiling 8:00 up to 20:00")
     func gridShape() {
-        #expect(SheetGrid.slots.count == 49)
-        #expect(SheetGrid.slots.first == TimeOfDay(hour: 8))
-        #expect(SheetGrid.slots.last == TimeOfDay(hour: 20))
+        #expect(SheetGrid.slots.count == 48)
+        #expect(SheetGrid.slots.first == SheetGrid.dayStart)
+        #expect(SheetGrid.slots.last == TimeOfDay(hour: 19, minute: 45))
+        // The slots tile the day exactly: the last one ends where the day does.
+        #expect(SheetGrid.slots.last?.adding(minutes: SheetGrid.slotMinutes) == SheetGrid.dayEnd)
     }
 }

@@ -40,7 +40,12 @@ public enum RoomTabParseError: Error, CustomStringConvertible, Sendable {
 
 /// Space tab → model. Layout of a tab:
 /// row 1 — title, 2 — start of the period, 3 — dates, 4 — weekday names,
-/// 5…53 — slots from 8:00 to 20:00, time in column A.
+/// 5…53 — times from 8:00 to 20:00 in column A.
+///
+/// **Rows 5…52 are read, row 53 is not.** The tab carries 49 time labels, but
+/// the last one marks the end of the day rather than a slot to spend — see
+/// `SheetGrid`. The extra row is therefore surplus rather than an error: the
+/// check below is a lower bound.
 public enum RoomTabParser {
     public static func parse(_ text: String) throws -> RoomTab {
         let rows: [[String]]

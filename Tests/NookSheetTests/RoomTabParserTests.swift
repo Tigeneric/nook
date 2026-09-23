@@ -2,7 +2,9 @@ import Testing
 import NookCore
 @testable import NookSheet
 
-/// CSV of a space tab: a four-row header and 49 slots.
+/// CSV of a space tab: a four-row header and, by default, the 48 slots the app
+/// reads. The real export carries a 49th row labelled 20:00 — pass
+/// `slotCount: 49` for that shape.
 /// `occupied` holds names by (slot index, date index).
 private func tabCSV(
     title: String = "Phone Booth C1 ",
@@ -17,7 +19,10 @@ private func tabCSV(
         "," + dates.map { _ in "FRIDAY" }.joined(separator: ","),
     ]
     for slotIndex in 0..<slotCount {
-        let time = SheetGrid.slots[slotIndex].description
+        // Computed rather than read from `SheetGrid.slots`, so that a tab with
+        // the real export's extra 20:00 row can be built too.
+        let time = SheetGrid.dayStart
+            .adding(minutes: slotIndex * SheetGrid.slotMinutes).description
         let cells = dates.indices.map { occupied[slotIndex]?[$0] ?? "" }
         lines.append(([time] + cells).joined(separator: ","))
     }
@@ -36,7 +41,21 @@ struct RoomTabParserTests {
                               CalendarDate(year: 2026, month: 9, day: 21)])
         #expect(tab.slots.count == SheetGrid.slotCount)
         #expect(tab.slots.first == TimeOfDay(hour: 8))
-        #expect(tab.slots.last == TimeOfDay(hour: 20))
+        #expect(tab.slots.last == TimeOfDay(hour: 19, minute: 45))
+    }
+
+    /// The real export has 49 time labels; the last one is the end of the day
+    /// rather than a slot, so the parser takes 48 and drops it — see
+    /// `SheetGrid`. A name typed into that row is invisible on purpose.
+    @Test("The tab's own 20:00 row is read past, not read in")
+    func ignoresEndOfDayRow() throws {
+        let tab = try RoomTabParser.parse(
+            tabCSV(occupied: [48: [0: "Ana Petrović"]], slotCount: 49))
+
+        #expect(tab.slots.count == SheetGrid.slotCount)
+        #expect(tab.slots.last == TimeOfDay(hour: 19, minute: 45))
+        #expect(tab.cells[0].count == SheetGrid.slotCount)
+        #expect(tab.cells[0].allSatisfy { $0 == nil })
     }
 
     @Test("A name lands in its own cell")

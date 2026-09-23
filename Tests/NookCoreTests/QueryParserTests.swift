@@ -240,9 +240,15 @@ struct QueryParserTests {
         #expect(first.shifted(bySlots: -1) == nil)
         #expect(first.shifted(bySlots: 1)?.start == TimeOfDay(hour: 8, minute: 15))
 
-        let last = try #require(parse("20:00 30m"))
+        let last = try #require(parse("19:45 30m"))
         #expect(last.shifted(bySlots: 1) == nil)
-        #expect(last.shifted(bySlots: -1)?.start == TimeOfDay(hour: 19, minute: 45))
+        #expect(last.shifted(bySlots: -1)?.start == TimeOfDay(hour: 19, minute: 30))
+
+        // 20:00 is off the grid — it is the end of the day, not a slot — so it
+        // snaps back onto the last one instead of stepping.
+        let past = try #require(parse("20:00 30m"))
+        #expect(past.shifted(bySlots: 1) == nil)
+        #expect(past.shifted(bySlots: -1)?.start == TimeOfDay(hour: 19, minute: 45))
     }
 
     @Test("A time off the slot boundary snaps onto the grid first")

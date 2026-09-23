@@ -331,10 +331,13 @@ public enum QueryEdit {
 
     /// Time stays inside the working day: an arrow at the edge does nothing
     /// rather than wrapping around to the other end.
+    ///
+    /// The upper bound is **exclusive**: `dayEnd` is where the day stops, not a
+    /// slot a booking can start in, so the last time an arrow reaches is 19:45.
     private static func shiftedTime(_ token: String, byMinutes minutes: Int) -> String? {
         guard let time = QueryParser.parseTime(Substring(token)) else { return nil }
         let shifted = time.adding(minutes: minutes)
-        guard shifted >= SheetGrid.dayStart, shifted <= SheetGrid.dayEnd else { return nil }
+        guard shifted >= SheetGrid.dayStart, shifted < SheetGrid.dayEnd else { return nil }
         return shifted.description
     }
 

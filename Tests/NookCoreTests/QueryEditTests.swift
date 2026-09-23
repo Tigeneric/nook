@@ -45,6 +45,10 @@ struct QueryEditTests {
         #expect(adjust("20:00 30m", caret: 1, by: 1) == nil)
         #expect(adjust("8:00 30m", caret: 0, by: -1) == nil)
         #expect(adjust("20:00 30m", caret: 4, by: 1) == nil)
+        // 19:45 is the last slot: a step forward would land on 20:00, where the
+        // day ends, and there is nothing to start there.
+        #expect(adjust("19:45 30m", caret: 4, by: 1) == nil)
+        #expect(adjust("19:00 30m", caret: 1, by: 1) == nil)
     }
 
     // MARK: - Duration

@@ -39,14 +39,24 @@ public struct TimeOfDay: Hashable, Comparable, Sendable, CustomStringConvertible
     }
 }
 
-/// Geometry of the source grid: 49 slots of 15 minutes, 8:00 to 20:00 inclusive.
-/// The numbers are fixed rather than derived from the data — that is how the
-/// sheet is laid out.
+/// Geometry of the working day: 15-minute slots tiling `[dayStart, dayEnd)`.
+/// 48 of them, the first starting at 8:00 and the last at 19:45.
+///
+/// **The sheet has a 49th row, labelled 20:00, and it is deliberately not
+/// read.** That row is where the day *ends*, not a quarter of an hour that can
+/// be spent: read as a slot it would stretch a booking — and every “free all
+/// day” answer — to 20:15, which is a time this coworking's day does not have.
+/// The price is a blind spot rather than a wrong answer: a name typed into row
+/// 53 of the sheet is invisible here, and a request at 20:00 is refused as
+/// outside the grid instead of being called free.
+///
+/// The count is derived from the bounds rather than written out, so that the
+/// two cannot drift apart.
 public enum SheetGrid {
     public static let dayStart = TimeOfDay(hour: 8)
     public static let dayEnd = TimeOfDay(hour: 20)
     public static let slotMinutes = 15
-    public static let slotCount = 49
+    public static let slotCount = (dayEnd.minutes - dayStart.minutes) / slotMinutes
 
     public static let slots: [TimeOfDay] = (0..<slotCount).map {
         dayStart.adding(minutes: $0 * slotMinutes)
@@ -72,7 +82,7 @@ public enum SheetGrid {
 
     /// The time a request is offered by default: the nearest slot no earlier
     /// than now, and the start of the day once the working day is over — past
-    /// 20:00 there is nothing left to offer until morning.
+    /// 19:45 there is nothing left to offer until morning.
     public static func suggestedStart(after now: TimeOfDay) -> TimeOfDay {
         slotIndex(atOrAfter: now).map { slots[$0] } ?? dayStart
     }

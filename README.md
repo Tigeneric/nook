@@ -57,7 +57,7 @@ spaces are free for the interval you asked about.
 ```
 Google Sheets ──CSV export──▶ NookSheet ──▶ NookCore ──▶ Nook (SwiftUI)
   8 tabs                      parsing       finding       NSPanel overlay
-  10 dates × 49 slots         the schedule  free windows  + global hot key
+  10 dates × 48 slots         the schedule  free windows  + global hot key
 ```
 
 The app **does not write** to the sheet: on ⏎ it opens the browser with the

@@ -201,8 +201,10 @@ struct AvailabilityTests {
         let query = Query(date: testDate, start: TimeOfDay(hour: 14), minutes: 30)
         let window = try #require(Availability.freeWindow(for: query, in: o1, of: schedule([:])))
 
+        // The whole day is 8:00–20:00 and stops there: the sheet's 20:00 row is
+        // the end of the day, not a slot, so the window does not run to 20:15.
         #expect(window.start == SheetGrid.dayStart)
-        #expect(window.end == SheetGrid.dayEnd.adding(minutes: SheetGrid.slotMinutes))
+        #expect(window.end == SheetGrid.dayEnd)
     }
 
     @Test("A taken space has no window")
