@@ -336,4 +336,118 @@ struct QueryEditTests {
         let edit = try #require(adjust("пт 14:00 45m meeting 1", caret: 4, by: 1))
         #expect(edit.text == "пт 15:00 45m meeting 1")
     }
+
+    @Test("Draft extracts spaceID, date, and duration")
+    func draftExtractsComponents() {
+        let d1 = QueryEdit.draft("MR1", today: today)
+        #expect(d1.hasSpace && d1.spaceID == "MR1" && !d1.hasTime)
+
+        let d2 = QueryEdit.draft("MR1 1h", today: today)
+        #expect(d2.hasSpace && d2.spaceID == "MR1" && d2.hasDuration && d2.durationMinutes == 60)
+
+        let d3 = QueryEdit.draft("meeting 1", today: today)
+        #expect(d3.hasSpace && d3.spaceID == "MR1")
+    }
+
+    @Test("suggestion after a lonely space gives window start")
+    func suggestionAfterSpace() {
+        #expect(QueryEdit.suggestion(after: "MR1", today: today, now: now, spaces: Space.all, windowStart: "8:15") == "8:15")
+        #expect(QueryEdit.suggestion(after: "MR1", today: today, now: now, spaces: Space.all, windowStart: nil) == nil)
+    }
+
+    @Test("suggestion after space and time gives duration")
+    func suggestionAfterSpaceAndTime() {
+        #expect(QueryEdit.suggestion(after: "MR1 8:15", today: today, now: now, spaces: Space.all) == "30m")
+    }
+
+    @Test("Ghost in evening carries day and round-trips through parse")
+    func eveningGhostRoundTrip() throws {
+        let dates = [today, today.adding(days: 1)]
+        let evening = TimeOfDay(hour: 19, minute: 50)
+        let s = Schedule(
+            spaces: Space.all,
+            dates: dates,
+            slots: SheetGrid.slots,
+            cells: Dictionary(uniqueKeysWithValues: Space.all.map { ($0.id, [
+                [String?](repeating: nil, count: SheetGrid.slotCount),
+                [String?](repeating: nil, count: SheetGrid.slotCount),
+            ]) })
+        )
+        let mr1 = try #require(Space.named("MR1"))
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: today, after: evening))
+        let draft = QueryEdit.draft("MR1", today: today)
+        let windowStart = QueryParser.windowStartText(
+            date: window.date,
+            start: window.start,
+            draftDate: draft.hasDay ? draft.date : nil,
+            today: today,
+            language: .ru
+        )
+        #expect(windowStart == "завтра 8:00")
+
+        let suggestion = try #require(QueryEdit.suggestion(
+            after: "MR1",
+            today: today,
+            now: evening,
+            spaces: Space.all,
+            windowStart: windowStart
+        ))
+        #expect(suggestion == "завтра 8:00")
+
+        let assembled = "MR1 " + suggestion
+        let draft2 = QueryEdit.draft(assembled, today: today)
+        #expect(draft2.hasSpace && draft2.hasDay && draft2.hasTime)
+
+        let durationSuggestion = try #require(QueryEdit.suggestion(
+            after: assembled,
+            today: today,
+            now: evening,
+            spaces: Space.all
+        ))
+        let fullQueryText = assembled + " " + durationSuggestion
+        let parsed = try #require(QueryParser.parse(fullQueryText, today: today, now: evening))
+        #expect(parsed.spaceID == "MR1")
+        #expect(parsed.date == dates[1])
+        #expect(parsed.start == TimeOfDay(hour: 8, minute: 0))
+        #expect(parsed.minutes == 30)
+    }
+
+    @Test("Caret on space without time cycles the catalogue and respects floor ring")
+    func adjustSpaceWithoutTime() throws {
+        let down = try #require(adjust("MR1", caret: 3, by: 1))
+        #expect(down.segment == .space)
+        #expect(down.text == "O1")
+
+        let up = try #require(adjust("MR1", caret: 3, by: -1))
+        #expect(up.text == "C4")
+
+        let floor1 = Space.all.filter { $0.floor == 1 }
+        let wrapped = try #require(QueryEdit.adjust("MR1", caret: 3, by: 1, today: today, spaces: floor1))
+        #expect(wrapped.text == "C1")
+    }
+
+    @Test("windowStartText includes day prefix when window date differs from draft date")
+    func windowStartTextDraftDate() {
+        let monday = CalendarDate(year: 2026, month: 9, day: 21)
+        let tuesday = CalendarDate(year: 2026, month: 9, day: 22)
+        let wednesday = CalendarDate(year: 2026, month: 9, day: 23)
+
+        let diffDay = QueryParser.windowStartText(
+            date: wednesday,
+            start: TimeOfDay(hour: 8, minute: 0),
+            draftDate: tuesday,
+            today: monday,
+            language: .ru
+        )
+        #expect(diffDay == "ср 8:00")
+
+        let sameDay = QueryParser.windowStartText(
+            date: tuesday,
+            start: TimeOfDay(hour: 8, minute: 0),
+            draftDate: tuesday,
+            today: monday,
+            language: .ru
+        )
+        #expect(sameDay == "8:00")
+    }
 }

@@ -70,6 +70,27 @@ public enum QueryEdit {
         public let hasTime: Bool
         public let hasDuration: Bool
         public let hasSpace: Bool
+        public let spaceID: String?
+        public let date: CalendarDate?
+        public let durationMinutes: Int?
+
+        public init(
+            hasDay: Bool,
+            hasTime: Bool,
+            hasDuration: Bool,
+            hasSpace: Bool,
+            spaceID: String? = nil,
+            date: CalendarDate? = nil,
+            durationMinutes: Int? = nil
+        ) {
+            self.hasDay = hasDay
+            self.hasTime = hasTime
+            self.hasDuration = hasDuration
+            self.hasSpace = hasSpace
+            self.spaceID = spaceID
+            self.date = date
+            self.durationMinutes = durationMinutes
+        }
     }
 
     /// Splits the line into parts without filling in defaults: `parse` would
@@ -78,30 +99,51 @@ public enum QueryEdit {
     public static func draft(_ text: String, today: CalendarDate) -> Draft {
         let tokens = tokenize(text)
         var day = false, time = false, duration = false, space = false
+        var spaceID: String?
+        var date: CalendarDate?
+        var minutes: Int?
         var index = 0
 
         while index < tokens.count {
             let token = tokens[index]
             if !space, index + 1 < tokens.count,
-               QueryParser.matchSpace(normalized(token.text) + normalized(tokens[index + 1].text)) != nil {
+               let matched = QueryParser.matchSpace(normalized(token.text) + normalized(tokens[index + 1].text)) {
                 space = true
+                spaceID = matched
                 index += 2
                 continue
             }
-            if !day, QueryParser.parseDay(Substring(token.text), today: today) != nil {
+            if !day, let parsed = QueryParser.parseDay(Substring(token.text), today: today) {
                 day = true
-            } else if !duration, QueryParser.parseDuration(Substring(token.text)) != nil {
+                date = parsed
+            } else if !duration, index + 1 < tokens.count,
+                      let parsed = QueryParser.parseDuration(Substring(token.text), Substring(tokens[index + 1].text)) {
                 duration = true
+                minutes = parsed
+                index += 2
+                continue
+            } else if !duration, let parsed = QueryParser.parseDuration(Substring(token.text)) {
+                duration = true
+                minutes = parsed
             } else if !time, QueryParser.parseTime(Substring(token.text)) != nil {
                 time = true
             } else if !time, QueryParser.isNowWord(Substring(token.text)) {
                 time = true
-            } else if !space, QueryParser.matchSpace(normalized(token.text)) != nil {
+            } else if !space, let matched = QueryParser.matchSpace(normalized(token.text)) {
                 space = true
+                spaceID = matched
             }
             index += 1
         }
-        return Draft(hasDay: day, hasTime: time, hasDuration: duration, hasSpace: space)
+        return Draft(
+            hasDay: day,
+            hasTime: time,
+            hasDuration: duration,
+            hasSpace: space,
+            spaceID: spaceID,
+            date: date,
+            durationMinutes: minutes
+        )
     }
 
     /// What to continue the request with: the time when only a day has been
@@ -120,12 +162,18 @@ public enum QueryEdit {
         after text: String,
         today: CalendarDate,
         now: TimeOfDay,
-        spaces: [Space]
+        spaces: [Space],
+        windowStart: String? = nil
     ) -> String? {
         let draft = draft(text, today: today)
         guard draft.hasTime else {
-            // A day on its own is continued with an hour. A space or a stray
-            // word is not a beginning: there is no telling what to add to it.
+            if draft.hasSpace {
+                return windowStart
+            }
+            // A day on its own is continued with an hour. A named space is
+            // continued with the start of its next free window (passed in
+            // `windowStart`). A stray word is not a beginning: there is no
+            // telling what to add to it.
             return draft.hasDay ? SheetGrid.suggestedStart(after: now).description : nil
         }
         if !draft.hasDuration { return "\(QueryParser.defaultMinutes)m" }
@@ -235,10 +283,21 @@ public enum QueryEdit {
     }
 
     /// The caret is not on an editable fragment — take the time, if there is one.
+    /// Without a time, take the space so arrows can cycle the catalogue.
     private static func fallback(_ tokens: [Token]) -> Target? {
         for token in tokens where QueryParser.parseTime(Substring(token.text)) != nil
             && QueryParser.parseDuration(Substring(token.text)) == nil {
             return Target(start: token.start, end: token.end, text: token.text, segment: .minute)
+        }
+        for (index, token) in tokens.enumerated() {
+            if index + 1 < tokens.count,
+               let id = QueryParser.matchSpace(normalized(token.text) + normalized(tokens[index + 1].text)) {
+                return Target(start: token.start, end: tokens[index + 1].end,
+                              text: token.text + " " + tokens[index + 1].text, segment: .space, spaceID: id)
+            }
+            if let id = QueryParser.matchSpace(normalized(token.text)) {
+                return Target(start: token.start, end: token.end, text: token.text, segment: .space, spaceID: id)
+            }
         }
         return nil
     }

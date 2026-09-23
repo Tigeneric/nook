@@ -153,6 +153,63 @@ struct OverlayView: View {
 
     // MARK: - Hint for the next part of the request
 
+    /// Where the search for free windows starts for a half-written request, and
+    /// what it accepts. One place on purpose: everything that offers a window
+    /// has to name the same one.
+    ///
+    /// `after` is `nil` for a named day — a day somebody typed is not «today»,
+    /// so it is counted from its beginning rather than from the current hour.
+    private func windowSearch(
+        for draft: QueryEdit.Draft
+    ) -> (date: CalendarDate, after: TimeOfDay?, minMinutes: Int) {
+        (
+            date: draft.date ?? today,
+            after: (draft.date == nil || draft.date == today) ? now : nil,
+            minMinutes: draft.durationMinutes ?? 0
+        )
+    }
+
+    /// The start time (and weekday if on a later date) of the space's next free window.
+    private func windowStart(for text: String) -> String? {
+        guard let schedule = store.schedule else { return nil }
+        let draft = QueryEdit.draft(text, today: today)
+        guard let spaceID = draft.spaceID,
+              let space = schedule.spaces.first(where: { $0.id == spaceID })
+        else { return nil }
+
+        // A day the sheet does not hold gets no ghost: there is no point
+        // completing a time into a day that does not exist.
+        if draft.hasDay {
+            guard let requestedDate = draft.date,
+                  schedule.dateIndex(of: requestedDate) != nil
+            else { return nil }
+        }
+
+        let search = windowSearch(for: draft)
+
+        guard let window = Availability.nextWindow(
+            space: space,
+            in: schedule,
+            from: search.date,
+            after: search.after,
+            minMinutes: search.minMinutes
+        ) else { return nil }
+
+        // The day was named and it is full: the answer lies on another date,
+        // and silently completing into it would answer a question nobody asked.
+        if draft.hasDay, let requestedDate = draft.date, window.date != requestedDate {
+            return nil
+        }
+
+        return QueryParser.windowStartText(
+            date: window.date,
+            start: window.start,
+            draftDate: draft.hasDay ? draft.date : nil,
+            today: today,
+            language: .interface(Bundle.main.preferredLocalizations)
+        )
+    }
+
     /// What ⇥ will add next. Shown in grey right after the typed text, the
     /// way a shell does it: what is offered is visible, and so is the fact
     /// that it has not been entered yet.
@@ -162,7 +219,13 @@ struct OverlayView: View {
         // one would be guessing. The duration still gets suggested, the space
         // does not: an empty list stops the suggestion there.
         let spaces = store.schedule == nil ? [] : freeSpaces(in: text)
-        return QueryEdit.suggestion(after: text, today: today, now: now, spaces: spaces)
+        return QueryEdit.suggestion(
+            after: text,
+            today: today,
+            now: now,
+            spaces: spaces,
+            windowStart: windowStart(for: text)
+        )
     }
 
     @ViewBuilder
@@ -618,8 +681,13 @@ struct OverlayView: View {
         if current.trimmingCharacters(in: .whitespaces).isEmpty {
             return (placeholder, placeholder.utf16.count)
         }
-        if let suggestion = QueryEdit.suggestion(after: current, today: today, now: now,
-                                                 spaces: freeSpaces(in: current)) {
+        if let suggestion = QueryEdit.suggestion(
+            after: current,
+            today: today,
+            now: now,
+            spaces: freeSpaces(in: current),
+            windowStart: windowStart(for: current)
+        ) {
             let separator = current.hasSuffix(" ") ? "" : " "
             let completed = current + separator + suggestion
             return (completed, completed.utf16.count)

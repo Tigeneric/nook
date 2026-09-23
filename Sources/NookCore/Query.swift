@@ -171,6 +171,25 @@ public enum QueryParser {
         return "\(dayText(for: date, today: today, language: language)) \(start) \(duration)"
     }
 
+    /// What the ghost offers as the start of a free window.
+    ///
+    /// When the day is already in the draft and matches the window date, or the
+    /// window is today (with no explicit day specified), the bare start time is
+    /// enough. On another day the ghost must carry the day too, otherwise ⇥
+    /// enters a bare time that `parse` binds to today’s morning or a different day.
+    public static func windowStartText(
+        date: CalendarDate,
+        start: TimeOfDay,
+        draftDate: CalendarDate?,
+        today: CalendarDate,
+        language: QueryLanguage
+    ) -> String {
+        if date == (draftDate ?? today) {
+            return start.description
+        }
+        return "\(dayText(for: date, today: today, language: language)) \(start)"
+    }
+
     /// The duration the hint offers. Not `defaultMinutes`: that one is what a
     /// request without a duration *means*, while this is what a person is
     /// being offered to ask for, and three quarters of an hour is the

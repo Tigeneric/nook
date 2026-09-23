@@ -12,6 +12,18 @@ private func schedule(_ occupied: [String: [Int: String]]) -> Schedule {
     return Schedule(spaces: Space.all, dates: [date], slots: SheetGrid.slots, cells: cells)
 }
 
+private func multiDaySchedule(dates: [CalendarDate], occupied: [String: [[Int: String]]] = [:]) -> Schedule {
+    var cells: [String: [[String?]]] = [:]
+    for space in Space.all {
+        let byDate = occupied[space.id] ?? []
+        cells[space.id] = dates.indices.map { dateIndex in
+            let bySlot = byDate.indices.contains(dateIndex) ? byDate[dateIndex] : [:]
+            return (0..<SheetGrid.slotCount).map { bySlot[$0] }
+        }
+    }
+    return Schedule(spaces: Space.all, dates: dates, slots: SheetGrid.slots, cells: cells)
+}
+
 private let testDate = CalendarDate(year: 2026, month: 9, day: 18)
 
 @Suite("Merging blocks")
@@ -224,6 +236,182 @@ struct AvailabilityTests {
 
         let windows = Availability.freeWindows(space: c1, dateIndex: 0, in: schedule)
         #expect(windows == [0..<24, 28..<SheetGrid.slotCount])
+    }
+
+    @Test("Empty space has a window for the whole day, 8:00–20:00")
+    func emptySpaceWindow() throws {
+        let s = schedule([:])
+        let mr1 = try #require(Space.named("MR1"))
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: testDate, after: nil))
+        #expect(window.date == testDate)
+        #expect(window.start == SheetGrid.dayStart)
+        #expect(window.end == SheetGrid.dayEnd)
+    }
+
+    @Test("Window is trimmed on the left by now")
+    func windowTrimmedByNow() throws {
+        let s = schedule([:])
+        let mr1 = try #require(Space.named("MR1"))
+        let now = TimeOfDay(hour: 8, minute: 10)
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: testDate, after: now))
+        #expect(window.date == testDate)
+        #expect(window.start == TimeOfDay(hour: 8, minute: 15))
+        #expect(window.end == SheetGrid.dayEnd)
+    }
+
+    @Test("Booking cuts the window on the right")
+    func bookingCutsWindowOnRight() throws {
+        let slots = Dictionary(uniqueKeysWithValues: (8..<12).map { ($0, "Ana") })
+        let s = schedule(["MR1": slots])
+        let mr1 = try #require(Space.named("MR1"))
+        let now = TimeOfDay(hour: 8, minute: 5)
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: testDate, after: now))
+        #expect(window.date == testDate)
+        #expect(window.start == TimeOfDay(hour: 8, minute: 15))
+        #expect(window.end == TimeOfDay(hour: 10, minute: 0))
+    }
+
+    @Test("When no slots remain today, window advances to the next sheet date")
+    func advancesToNextSheetDate() throws {
+        let date1 = CalendarDate(year: 2026, month: 9, day: 18)
+        let date2 = CalendarDate(year: 2026, month: 9, day: 21)
+        let s = multiDaySchedule(dates: [date1, date2], occupied: [:])
+        let mr1 = try #require(Space.named("MR1"))
+        let evening = TimeOfDay(hour: 19, minute: 50)
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: date1, after: evening))
+        #expect(window.date == date2)
+        #expect(window.start == SheetGrid.dayStart)
+        #expect(window.end == SheetGrid.dayEnd)
+    }
+
+    @Test("Named day is counted from start of day, not from now")
+    func namedDayStartsAtDayStart() throws {
+        let date1 = CalendarDate(year: 2026, month: 9, day: 18)
+        let date2 = CalendarDate(year: 2026, month: 9, day: 21)
+        let s = multiDaySchedule(dates: [date1, date2], occupied: [:])
+        let mr1 = try #require(Space.named("MR1"))
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: date2, after: nil))
+        #expect(window.date == date2)
+        #expect(window.start == SheetGrid.dayStart)
+        #expect(window.end == SheetGrid.dayEnd)
+    }
+
+    @Test("Date not in schedule returns nil")
+    func dateNotInSchedule() throws {
+        let s = schedule([:])
+        let mr1 = try #require(Space.named("MR1"))
+        let otherDate = CalendarDate(year: 2026, month: 9, day: 30)
+        #expect(Availability.nextWindow(space: mr1, in: s, from: otherDate, after: nil) == nil)
+        #expect(Availability.freeWindows(space: mr1, in: s, from: otherDate, after: nil).isEmpty)
+    }
+
+    @Test("Free runs of the day asked about filter by minMinutes")
+    func freeWindowsDurationFilter() throws {
+        var day1: [Int: String] = [:]
+        for slot in 4..<8 { day1[slot] = "User" }
+        for slot in 10..<12 { day1[slot] = "User" }
+        for slot in 20..<48 { day1[slot] = "User" }
+
+        let date1 = CalendarDate(year: 2026, month: 9, day: 18)
+        let date2 = CalendarDate(year: 2026, month: 9, day: 21)
+        let s = multiDaySchedule(dates: [date1, date2], occupied: ["C1": [day1, [:]]])
+        let c1 = try #require(Space.named("C1"))
+
+        // 10:00–10:30 is half an hour and drops out; the two survivors are both
+        // of date1, and date2 stays out of it — the day still has something.
+        let runs = Availability.freeWindows(space: c1, in: s, from: date1, after: nil, minMinutes: 45)
+        #expect(runs.count == 2)
+        #expect(runs[0].date == date1 && runs[0].start == TimeOfDay(hour: 8) && runs[0].end == TimeOfDay(hour: 9))
+        #expect(runs[1].date == date1 && runs[1].start == TimeOfDay(hour: 11) && runs[1].end == TimeOfDay(hour: 13))
+        #expect(runs.allSatisfy { $0.date == date1 })
+    }
+
+    /// The defect this exists for: the list walked the sheet to its last date,
+    /// so an empty space answered «when are you free» with one row per date —
+    /// four days in four rows, and the six dates past the ceiling vanished
+    /// without a counter. The day asked about is the answer; the next date is a
+    /// fallback for a day that has nothing, not a continuation of one that has.
+    @Test("A day with windows does not spill into the following dates")
+    func doesNotSpillPastTheDayAsked() throws {
+        let date1 = CalendarDate(year: 2026, month: 9, day: 18)
+        let date2 = CalendarDate(year: 2026, month: 9, day: 21)
+        let date3 = CalendarDate(year: 2026, month: 9, day: 22)
+        let s = multiDaySchedule(dates: [date1, date2, date3], occupied: [:])
+        let mr1 = try #require(Space.named("MR1"))
+
+        let free = Availability.freeWindows(space: mr1, in: s, from: date1, after: nil)
+        #expect(free.count == 1)
+        #expect(free[0].date == date1)
+
+        // A day booked solid is what moves the answer on — and only by one day,
+        // because that next day has a window of its own.
+        let solid = Dictionary(uniqueKeysWithValues: (0..<SheetGrid.slotCount).map { ($0, "User") })
+        let blocked = multiDaySchedule(dates: [date1, date2, date3], occupied: ["MR1": [solid, [:], [:]]])
+        let afterBlock = Availability.freeWindows(space: mr1, in: blocked, from: date1, after: nil)
+        #expect(afterBlock.count == 1)
+        #expect(afterBlock[0].date == date2)
+    }
+
+    @Test("Weekend query advances to Monday without truncating by Saturday time")
+    func weekendAdvancesToMonday() throws {
+        let monday = CalendarDate(year: 2026, month: 9, day: 21)
+        let s = multiDaySchedule(dates: [monday], occupied: [:])
+        let mr1 = try #require(Space.named("MR1"))
+        let saturday = CalendarDate(year: 2026, month: 9, day: 19)
+        let afternoon = TimeOfDay(hour: 15, minute: 30)
+
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: saturday, after: afternoon))
+        #expect(window.date == monday)
+        #expect(window.start == SheetGrid.dayStart)
+        #expect(window.end == SheetGrid.dayEnd)
+
+        let windows = Availability.freeWindows(space: mr1, in: s, from: saturday, after: afternoon)
+        #expect(windows.count == 1)
+        #expect(windows[0].date == monday)
+        #expect(windows[0].start == SheetGrid.dayStart)
+        #expect(!windows[0].isOpenNow)
+    }
+
+    @Test("Space open at now is flagged as isOpenNow and bookable from next slot")
+    func isOpenNowFlag() throws {
+        let s = schedule([:])
+        let mr1 = try #require(Space.named("MR1"))
+        let now = TimeOfDay(hour: 14, minute: 4)
+
+        let windows = Availability.freeWindows(space: mr1, in: s, from: testDate, after: now)
+        #expect(!windows.isEmpty)
+        #expect(windows[0].start == TimeOfDay(hour: 14, minute: 15))
+        #expect(windows[0].isOpenNow)
+
+        // If occupied during now, isOpenNow is false
+        let occupiedSlots = Dictionary(uniqueKeysWithValues: (24..<26).map { ($0, "User") })
+        let busySchedule = schedule(["MR1": occupiedSlots])
+        let busyWindows = Availability.freeWindows(space: mr1, in: busySchedule, from: testDate, after: now)
+        #expect(!busyWindows.isEmpty)
+        #expect(busyWindows[0].start == TimeOfDay(hour: 14, minute: 30))
+        #expect(!busyWindows[0].isOpenNow)
+    }
+
+    @Test("nextWindow with minMinutes skips short windows")
+    func nextWindowDurationFilter() throws {
+        // Free: 8:00-8:30 (30m), busy: 8:30-9:00, free: 9:00-11:00 (2h)
+        let busySlots = Dictionary(uniqueKeysWithValues: (2..<4).map { ($0, "User") })
+        let s = schedule(["MR1": busySlots])
+        let mr1 = try #require(Space.named("MR1"))
+
+        let window = try #require(Availability.nextWindow(space: mr1, in: s, from: testDate, after: nil, minMinutes: 60))
+        #expect(window.start == TimeOfDay(hour: 9, minute: 0))
+        #expect(window.end == SheetGrid.dayEnd)
+    }
+
+    @Test("Fully booked space returns nil and empty list")
+    func fullyBookedSpace() throws {
+        let allSlots = Dictionary(uniqueKeysWithValues: (0..<SheetGrid.slotCount).map { ($0, "User") })
+        let s = schedule(["MR1": allSlots])
+        let mr1 = try #require(Space.named("MR1"))
+
+        #expect(Availability.nextWindow(space: mr1, in: s, from: testDate, after: nil) == nil)
+        #expect(Availability.freeWindows(space: mr1, in: s, from: testDate, after: nil).isEmpty)
     }
 }
 
